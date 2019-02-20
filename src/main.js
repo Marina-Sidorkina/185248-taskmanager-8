@@ -1,27 +1,30 @@
 'use strict';
 
-const FITERS_NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
-const CARDS_NUMBER = 7;
-const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
-const COLOR_BUTTONS_VARIANTS = [`black`, `yellow`, `blue`, `green`, `pink`];
-const CARD_STATUS_VALUES = [`edit`, `archive`, `favorites`];
+const CARD_DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
+const CARD_STATUSES = [`edit`, `archive`, `favorites`];
+const CARD_COLOR_BUTTONS = [`black`, `yellow`, `blue`, `green`, `pink`];
+const CARD_LIMIT = 7;
 
-const CardParameter = {
-  CONTROLS: [`edit`, `archive`, `disabled`],
-  TEXT: `Here is a card with filled data`,
-  IMG_SRC: `img/sample-img.jpg`,
-  HASHTAGS: [`repeat`, `cinema`, `entertaiment`],
-  DEADLINE_TOGGLE_VALUE: `yes`,
-  DATE: `23 September`,
-  TIME: `11:15 PM`,
-  REPEAT_STATUS: `yes`
+const FILTERS_NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
+
+const card = {
+  controls: [`edit`, `archive`, `disabled`],
+  text: `Here is a card with filled data`,
+  image: `img/sample-img.jpg`,
+  hashtags: [`repeat`, `cinema`, `entertaiment`],
+  deadlineToggleValue: `yes`,
+  date: `23 September`,
+  time: `11:15 PM`,
+  repeatStatus: `yes`
 };
 
 const boardElement = document.querySelector(`.board__tasks`);
 const filterElement = document.querySelector(`.main__filter`);
 
+// getRandomNumber -> create/generate/..
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
+// renderControlButton -> create...Template
 const renderControlButton = (status, value) => (
   `<button type="button" class="card__btn card__btn--${status}">
     ${value}
@@ -29,14 +32,15 @@ const renderControlButton = (status, value) => (
 );
 
 const renderCardControlBlock = () => {
-  let controlButtonsBlock = ``;
-  CARD_STATUS_VALUES.forEach((value, index) => {
-    controlButtonsBlock += renderControlButton(CardParameter.CONTROLS[index], value);
-  });
+  const block = CARD_STATUSES
+    .map((value, index) => (
+      renderControlButton(card.controls[index], value)
+    ))
+    .join(``);
 
   return (
     `<div class="card__control">
-      ${controlButtonsBlock}
+      ${block}
     </div>`
   );
 };
@@ -55,7 +59,7 @@ const renderTextarea = () => (
       <textarea
         class="card__text"
         placeholder="Start typing your text here..."
-        name="text">${CardParameter.TEXT}</textarea>
+        name="text">${card.text}</textarea>
     </label>
   </div>`
 );
@@ -78,17 +82,12 @@ const renderDeadlineSetting = (parameter, setting) => (
   </label>`
 );
 
-const renderDeadlineSettings = (dateSetting, timeSetting) => {
-  const FIRST_PARAMETER = `date`;
-  const SECOND_PARAMETER = `time`;
-
-  return (
-    `<fieldset class="card__date-deadline">
-    ${renderDeadlineSetting(FIRST_PARAMETER, dateSetting)}
-    ${renderDeadlineSetting(SECOND_PARAMETER, timeSetting)}
-    </fieldset>`
-  );
-};
+const renderDeadlineSettings = (dateSetting, timeSetting) => (
+  `<fieldset class="card__date-deadline">
+    ${renderDeadlineSetting(`date`, dateSetting)}
+    ${renderDeadlineSetting(`time`, timeSetting)}
+  </fieldset>`
+);
 
 const renderRepeatStatus = (status) => (
   `<button class="card__repeat-toggle" type="button">
@@ -110,7 +109,7 @@ const renderRepeatDay = (day) => (
 );
 
 const renderRepeatDays = () => {
-  const block = DAYS
+  const block = CARD_DAYS
     .map((day) => renderRepeatDay(day))
     .join(``);
 
@@ -125,9 +124,9 @@ const renderRepeatDays = () => {
 
 const renderCardDatesBlock = () => (
   `<div class="card__dates">
-    ${renderDeadlineToggle(CardParameter.DEADLINE_TOGGLE_VALUE)}
-    ${renderDeadlineSettings(CardParameter.DATE, CardParameter.TIME)}
-    ${renderRepeatStatus(CardParameter.REPEAT_STATUS)}
+    ${renderDeadlineToggle(card.deadlineToggleValue)}
+    ${renderDeadlineSettings(card.date, card.time)}
+    ${renderRepeatStatus(card.repeatStatus)}
     ${renderRepeatDays()}
   </div>`
 );
@@ -148,7 +147,7 @@ const renderColorButton = (color) => (
 );
 
 const renderColorButtons = () => {
-  const block = COLOR_BUTTONS_VARIANTS
+  const block = CARD_COLOR_BUTTONS
     .map((color) => renderColorButton(color))
     .join(``);
 
@@ -171,7 +170,7 @@ const renderImage = () => (
       name="img"
     />
     <img
-      src="${CardParameter.IMG_SRC}"
+      src="${card.image}"
       alt="task picture"
       class="card__img"
     />
@@ -206,8 +205,8 @@ const renderHashtagInput = () => (
   </label>`
 );
 
-const renderHashtagsBlock = () => {
-  const block = CardParameter.HASHTAGS
+const renderHashtagsBlock = (hashtags) => {
+  const block = hashtags
     .map((hashtag) => renderHashtag(hashtag))
     .join(``);
 
@@ -238,7 +237,7 @@ const renderCard = () => (
       <div class="card__settings">
         <div class="card__details">
           ${renderCardDatesBlock()}
-          ${renderHashtagsBlock()}
+          ${renderHashtagsBlock(card.hashtags)}
         </div>
         ${renderImage()}
         ${renderColorButtons()}
@@ -248,10 +247,11 @@ const renderCard = () => (
   </article>`
 );
 
-const renderCardsList = (number) => {
+// @NOTICE: улучшить по желанию
+const renderCardList = (number) => {
   let cardsBlock = ``;
   for (let i = 0; i < number; i++) {
-    cardsBlock += renderCard();
+    cardsBlock += renderCard(card); // используем из глобальной области видимости
   }
 
   return cardsBlock;
@@ -275,26 +275,24 @@ const renderFilter = (name, status) => {
   );
 };
 
-const renderFiltersBlock = () => {
-  let block = ``;
-  FITERS_NAMES.forEach((name) => {
-    let status = name === `TODAY` ? `checked` : ``;
-    block += renderFilter(name, status);
-  });
-
-  return block;
-};
+const renderFilterBlock = () => (
+  FILTERS_NAMES
+    .map((name) => {
+      const status = name === `TODAY` ? `checked` : ``;
+      return renderFilter(name, status);
+    })
+    .join(``)
+);
 
 const addFiltersEventListener = () => {
-  const filterInputElements = document.querySelectorAll(`.filter__input`);
-  filterInputElements.forEach((item) => {
-    item.addEventListener(`click`, () => {
-      boardElement.innerHTML = renderCardsList(item.value);
+  document.querySelectorAll(`.filter__input`).forEach((element) => {
+    element.addEventListener(`click`, () => {
+      boardElement.innerHTML = renderCardList(element.value);
     });
   });
 };
 
-filterElement.innerHTML = renderFiltersBlock();
-boardElement.innerHTML = renderCardsList(CARDS_NUMBER);
+filterElement.innerHTML = renderFilterBlock();
+boardElement.innerHTML = renderCardList(CARD_LIMIT);
 
 addFiltersEventListener();
