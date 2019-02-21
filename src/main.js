@@ -284,7 +284,7 @@ const createFilterTemplate = () => (
 const addFilterClickEventListener = () => {
   document.querySelectorAll(`.filter__input`).forEach((element) => {
     element.addEventListener(`click`, () => {
-      boardElement.innerHTML = createCardListTemplate(element.value);
+      boardElement.innerHTML = createCardListTemplate(element.value, card);
     });
   });
 };
