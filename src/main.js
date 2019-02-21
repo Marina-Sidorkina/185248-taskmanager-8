@@ -21,20 +21,18 @@ const card = {
 const boardElement = document.querySelector(`.board__tasks`);
 const filterElement = document.querySelector(`.main__filter`);
 
-// getRandomNumber -> create/generate/..
-const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
+const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
-// renderControlButton -> create...Template
-const renderControlButton = (status, value) => (
+const createCardBtnTemlate = (status, value) => (
   `<button type="button" class="card__btn card__btn--${status}">
     ${value}
   </button>`
 );
 
-const renderCardControlBlock = () => {
+const createCardBtnsTemlate = (controls) => {
   const block = CARD_STATUSES
     .map((value, index) => (
-      renderControlButton(card.controls[index], value)
+      createCardBtnTemlate(controls[index], value)
     ))
     .join(``);
 
@@ -45,7 +43,7 @@ const renderCardControlBlock = () => {
   );
 };
 
-const renderColorBar = () => (
+const createCardColorBarTemplate = () => (
   `<div class="card__color-bar">
     <svg class="card__color-bar-wave" width="100%" height="10">
       <use xlink:href="#wave"></use>
@@ -53,24 +51,24 @@ const renderColorBar = () => (
   </div>`
 );
 
-const renderTextarea = () => (
+const createCardTextareaTemplate = (text) => (
   `<div class="card__textarea-wrap">
     <label>
       <textarea
         class="card__text"
         placeholder="Start typing your text here..."
-        name="text">${card.text}</textarea>
+        name="text">${text}</textarea>
     </label>
   </div>`
 );
 
-const renderDeadlineToggle = (setting) => (
+const createCardDeadlineToggleTemplate = (setting) => (
   `<button class="card__date-deadline-toggle" type="button">
     date: <span class="card__date-status">${setting}</span>
   </button>`
 );
 
-const renderDeadlineSetting = (parameter, setting) => (
+const createCardDeadlineInputTemlate = (parameter, setting) => (
   `<label class="card__input-deadline-wrap">
     <input
       class="card__${parameter}"
@@ -82,20 +80,20 @@ const renderDeadlineSetting = (parameter, setting) => (
   </label>`
 );
 
-const renderDeadlineSettings = (dateSetting, timeSetting) => (
+const createCardDeadlineTemlate = (dateSetting, timeSetting) => (
   `<fieldset class="card__date-deadline">
-    ${renderDeadlineSetting(`date`, dateSetting)}
-    ${renderDeadlineSetting(`time`, timeSetting)}
+    ${createCardDeadlineInputTemlate(`date`, dateSetting)}
+    ${createCardDeadlineInputTemlate(`time`, timeSetting)}
   </fieldset>`
 );
 
-const renderRepeatStatus = (status) => (
+const createCardRepeatToggleTemplate = (status) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">${status}</span>
   </button>`
 );
 
-const renderRepeatDay = (day) => (
+const createCardRepeatDayInputTemplate = (day) => (
   `<input
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
@@ -108,9 +106,9 @@ const renderRepeatDay = (day) => (
   >`
 );
 
-const renderRepeatDays = () => {
+const createCardRepeatDaysTemplate = () => {
   const block = CARD_DAYS
-    .map((day) => renderRepeatDay(day))
+    .map((day) => createCardRepeatDayInputTemplate(day))
     .join(``);
 
   return (
@@ -122,16 +120,16 @@ const renderRepeatDays = () => {
   );
 };
 
-const renderCardDatesBlock = () => (
+const createCardDatesTemplate = (deadlineToggleValue, date, time, repeatStatus) => (
   `<div class="card__dates">
-    ${renderDeadlineToggle(card.deadlineToggleValue)}
-    ${renderDeadlineSettings(card.date, card.time)}
-    ${renderRepeatStatus(card.repeatStatus)}
-    ${renderRepeatDays()}
+    ${createCardDeadlineToggleTemplate(deadlineToggleValue)}
+    ${createCardDeadlineTemlate(date, time)}
+    ${createCardRepeatToggleTemplate(repeatStatus)}
+    ${createCardRepeatDaysTemplate()}
   </div>`
 );
 
-const renderColorButton = (color) => (
+const createCardColorInputTemplate = (color) => (
   `<input
     type="radio"
     id="color-${color}-4"
@@ -146,9 +144,9 @@ const renderColorButton = (color) => (
   >`
 );
 
-const renderColorButtons = () => {
+const createCardColorsTemplate = () => {
   const block = CARD_COLOR_BUTTONS
-    .map((color) => renderColorButton(color))
+    .map((color) => createCardColorInputTemplate(color))
     .join(``);
 
   return (
@@ -162,7 +160,7 @@ const renderColorButtons = () => {
   );
 };
 
-const renderImage = () => (
+const createCardImageTemplate = (image) => (
   `<label class="card__img-wrap">
     <input
       type="file"
@@ -170,14 +168,14 @@ const renderImage = () => (
       name="img"
     />
     <img
-      src="${card.image}"
+      src="${image}"
       alt="task picture"
       class="card__img"
     />
   </label>`
 );
 
-const renderHashtag = (value) => (
+const createCardHashtagBtnTemplate = (value) => (
   `<span class="card__hashtag-inner">
     <input
       type="hidden"
@@ -194,7 +192,7 @@ const renderHashtag = (value) => (
   </span>`
 );
 
-const renderHashtagInput = () => (
+const createCardHashtagInputTemplate = () => (
   `<label>
     <input
       type="text"
@@ -205,9 +203,9 @@ const renderHashtagInput = () => (
   </label>`
 );
 
-const renderHashtagsBlock = (hashtags) => {
+const createCardHashtagsTemplate = (hashtags) => {
   const block = hashtags
-    .map((hashtag) => renderHashtag(hashtag))
+    .map((hashtag) => createCardHashtagBtnTemplate(hashtag))
     .join(``);
 
   return (
@@ -215,50 +213,49 @@ const renderHashtagsBlock = (hashtags) => {
       <div class="card__hashtag-list">
         ${block}
       </div>
-      ${renderHashtagInput()}
+      ${createCardHashtagInputTemplate()}
     </div>`
   );
 };
 
-const renderStatusBtns = () => (
+const createCardStatusBtnsTemplate = () => (
   `<div class="card__status-btns">
     <button class="card__save" type="submit">save</button>
     <button class="card__delete" type="button">delete</button>
   </div>`
 );
 
-const renderCard = () => (
+const createCardTemplate = (cardObject) => (
   `<article class="card card--edit card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${renderCardControlBlock()}
-      ${renderColorBar()}
-      ${renderTextarea()}
+      ${createCardBtnsTemlate(cardObject.controls)}
+      ${createCardColorBarTemplate()}
+      ${createCardTextareaTemplate(cardObject.text)}
       <div class="card__settings">
         <div class="card__details">
-          ${renderCardDatesBlock()}
-          ${renderHashtagsBlock(card.hashtags)}
+          ${createCardDatesTemplate(cardObject.deadlineToggleValue, cardObject.date, cardObject.time, cardObject.repeatStatus)}
+          ${createCardHashtagsTemplate(cardObject.hashtags)}
         </div>
-        ${renderImage()}
-        ${renderColorButtons()}
-        ${renderStatusBtns()}
+        ${createCardImageTemplate(cardObject.image)}
+        ${createCardColorsTemplate()}
+        ${createCardStatusBtnsTemplate()}
       </div>
     </form>
   </article>`
 );
 
-// @NOTICE: улучшить по желанию
-const renderCardList = (number) => {
+const createCardListTemplate = (number, cardObject) => {
   let cardsBlock = ``;
   for (let i = 0; i < number; i++) {
-    cardsBlock += renderCard(card); // используем из глобальной области видимости
+    cardsBlock += createCardTemplate(cardObject);
   }
 
   return cardsBlock;
 };
 
-const renderFilter = (name, status) => {
-  const number = getRandomNumber(1, 15);
+const createFilterInputTemplate = (name, status) => {
+  const number = generateRandomNumber(1, 15);
 
   return (
     `<input
@@ -275,24 +272,24 @@ const renderFilter = (name, status) => {
   );
 };
 
-const renderFilterBlock = () => (
+const createFilterTemplate = () => (
   FILTERS_NAMES
     .map((name) => {
       const status = name === `TODAY` ? `checked` : ``;
-      return renderFilter(name, status);
+      return createFilterInputTemplate(name, status);
     })
     .join(``)
 );
 
-const addFiltersEventListener = () => {
+const addFilterClickEventListener = () => {
   document.querySelectorAll(`.filter__input`).forEach((element) => {
     element.addEventListener(`click`, () => {
-      boardElement.innerHTML = renderCardList(element.value);
+      boardElement.innerHTML = createCardListTemplate(element.value);
     });
   });
 };
 
-filterElement.innerHTML = renderFilterBlock();
-boardElement.innerHTML = renderCardList(CARD_LIMIT);
+filterElement.innerHTML = createFilterTemplate();
+boardElement.innerHTML = createCardListTemplate(CARD_LIMIT, card);
 
-addFiltersEventListener();
+addFilterClickEventListener();
