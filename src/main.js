@@ -152,9 +152,8 @@ const createCardColorsTemplate = () => {
   return (
     `<div class="card__colors-inner">
       <h3 class="card__colors-title">Color</h3>
-        <div class="card__colors-wrap">
-          ${block}
-        </div>
+      <div class="card__colors-wrap">
+        ${block}
       </div>
     </div>`
   );
@@ -232,15 +231,16 @@ const createCardTemplate = (cardObject) => (
       ${createCardBtnsTemlate(cardObject.controls)}
       ${createCardColorBarTemplate()}
       ${createCardTextareaTemplate(cardObject.text)}
-      <div class="card__settings">
-        <div class="card__details">
-          ${createCardDatesTemplate(cardObject.deadlineToggleValue, cardObject.date, cardObject.time, cardObject.repeatStatus)}
-          ${createCardHashtagsTemplate(cardObject.hashtags)}
+       <div class="card__settings">
+          <div class="card__details">
+            ${createCardDatesTemplate(cardObject.deadlineToggleValue, cardObject.date, cardObject.time, cardObject.repeatStatus)}
+            ${createCardHashtagsTemplate(cardObject.hashtags)}
+          </div>
+          ${createCardImageTemplate(cardObject.image)}
+          ${createCardColorsTemplate()}
         </div>
-        ${createCardImageTemplate(cardObject.image)}
-        ${createCardColorsTemplate()}
-        ${createCardStatusBtnsTemplate()}
-      </div>
+          ${createCardStatusBtnsTemplate()}
+       </div>
     </form>
   </article>`
 );
