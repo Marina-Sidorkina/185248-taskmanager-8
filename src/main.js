@@ -18,8 +18,6 @@ const card = {
   repeatStatus: `yes`
 };
 
-const boardElement = document.querySelector(`.board__tasks`);
-const filterElement = document.querySelector(`.main__filter`);
 
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
@@ -245,14 +243,15 @@ const createCardTemplate = (cardObject) => (
   </article>`
 );
 
-const createCardListTemplate = (number, cardObject) => {
-  let cardsBlock = ``;
-  for (let i = 0; i < number; i++) {
-    cardsBlock += createCardTemplate(cardObject);
-  }
+const createNumberRange = (limit) => (
+  Array.from(new Array(limit), (_, i) => i)
+);
 
-  return cardsBlock;
-};
+const createCardListTemplate = (limit, cardObject) => (
+  createNumberRange(limit)
+    .map(() => createCardTemplate(cardObject))
+    .join(``)
+);
 
 const createFilterInputTemplate = (name, status) => {
   const number = generateRandomNumber(1, 15);
@@ -284,10 +283,13 @@ const createFilterTemplate = () => (
 const addFilterClickEventListener = () => {
   document.querySelectorAll(`.filter__input`).forEach((element) => {
     element.addEventListener(`click`, () => {
-      boardElement.innerHTML = createCardListTemplate(element.value, card);
+      boardElement.innerHTML = createCardListTemplate(generateRandomNumber(0, CARD_LIMIT), card);
     });
   });
 };
+
+const boardElement = document.querySelector(`.board__tasks`);
+const filterElement = document.querySelector(`.main__filter`);
 
 filterElement.innerHTML = createFilterTemplate();
 boardElement.innerHTML = createCardListTemplate(CARD_LIMIT, card);
