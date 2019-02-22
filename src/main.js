@@ -244,7 +244,7 @@ const createCardTemplate = (cardObject) => (
 );
 
 const createNumberRange = (limit) => (
-  Array.from(new Array(limit), (x, i) => i)
+  Array.from(new Array(limit), (_, i) => i)
 );
 
 const createCardListTemplate = (limit, cardObject) => (
