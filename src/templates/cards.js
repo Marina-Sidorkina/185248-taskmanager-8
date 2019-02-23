@@ -1,17 +1,17 @@
-const CARD_DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
-const CARD_STATUSES = [`edit`, `archive`, `favorites`];
-const CARD_COLOR_BUTTONS = [`black`, `yellow`, `blue`, `green`, `pink`];
+const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
+const STATUSES = [`edit`, `archive`, `favorites`];
+const COLOR_BUTTONS = [`black`, `yellow`, `blue`, `green`, `pink`];
 
-const createCardBtnTemlate = (status, value) => (
+const createBtnTemlate = (status, value) => (
   `<button type="button" class="card__btn card__btn--${status}">
     ${value}
   </button>`
 );
 
-const createCardBtnsTemlate = (controls) => {
-  const block = CARD_STATUSES
+const createBtnsTemlate = (controls) => {
+  const block = STATUSES
     .map((value, index) => (
-      createCardBtnTemlate(controls[index], value)
+      createBtnTemlate(controls[index], value)
     ))
     .join(``);
 
@@ -22,7 +22,7 @@ const createCardBtnsTemlate = (controls) => {
   );
 };
 
-const createCardColorBarTemplate = () => (
+const createColorBarTemplate = () => (
   `<div class="card__color-bar">
     <svg class="card__color-bar-wave" width="100%" height="10">
       <use xlink:href="#wave"></use>
@@ -30,7 +30,7 @@ const createCardColorBarTemplate = () => (
   </div>`
 );
 
-const createCardTextareaTemplate = (text) => (
+const createTextareaTemplate = (text) => (
   `<div class="card__textarea-wrap">
     <label>
       <textarea
@@ -41,13 +41,13 @@ const createCardTextareaTemplate = (text) => (
   </div>`
 );
 
-const createCardDeadlineToggleTemplate = (setting) => (
+const createDeadlineToggleTemplate = (setting) => (
   `<button class="card__date-deadline-toggle" type="button">
     date: <span class="card__date-status">${setting}</span>
   </button>`
 );
 
-const createCardDeadlineInputTemlate = (parameter, setting) => (
+const createDeadlineInputTemlate = (parameter, setting) => (
   `<label class="card__input-deadline-wrap">
     <input
       class="card__${parameter}"
@@ -59,20 +59,20 @@ const createCardDeadlineInputTemlate = (parameter, setting) => (
   </label>`
 );
 
-const createCardDeadlineTemlate = (dateSetting, timeSetting) => (
+const createDeadlineTemlate = (dateSetting, timeSetting) => (
   `<fieldset class="card__date-deadline">
-    ${createCardDeadlineInputTemlate(`date`, dateSetting)}
-    ${createCardDeadlineInputTemlate(`time`, timeSetting)}
+    ${createDeadlineInputTemlate(`date`, dateSetting)}
+    ${createDeadlineInputTemlate(`time`, timeSetting)}
   </fieldset>`
 );
 
-const createCardRepeatToggleTemplate = (status) => (
+const createRepeatToggleTemplate = (status) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">${status}</span>
   </button>`
 );
 
-const createCardRepeatDayInputTemplate = (day) => (
+const createRepeatDayInputTemplate = (day) => (
   `<input
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
@@ -85,9 +85,9 @@ const createCardRepeatDayInputTemplate = (day) => (
   >`
 );
 
-const createCardRepeatDaysTemplate = () => {
-  const block = CARD_DAYS
-    .map((day) => createCardRepeatDayInputTemplate(day))
+const createRepeatDaysTemplate = () => {
+  const block = DAYS
+    .map((day) => createRepeatDayInputTemplate(day))
     .join(``);
 
   return (
@@ -99,16 +99,16 @@ const createCardRepeatDaysTemplate = () => {
   );
 };
 
-const createCardDatesTemplate = (deadlineToggleValue, date, time, repeatStatus) => (
+const createDatesTemplate = (deadlineToggleValue, date, time, repeatStatus) => (
   `<div class="card__dates">
-    ${createCardDeadlineToggleTemplate(deadlineToggleValue)}
-    ${createCardDeadlineTemlate(date, time)}
-    ${createCardRepeatToggleTemplate(repeatStatus)}
-    ${createCardRepeatDaysTemplate()}
+    ${createDeadlineToggleTemplate(deadlineToggleValue)}
+    ${createDeadlineTemlate(date, time)}
+    ${createRepeatToggleTemplate(repeatStatus)}
+    ${createRepeatDaysTemplate()}
   </div>`
 );
 
-const createCardColorInputTemplate = (color) => (
+const createColorTemplate = (color) => (
   `<input
     type="radio"
     id="color-${color}-4"
@@ -123,9 +123,9 @@ const createCardColorInputTemplate = (color) => (
   >`
 );
 
-const createCardColorsTemplate = () => {
-  const block = CARD_COLOR_BUTTONS
-    .map((color) => createCardColorInputTemplate(color))
+const createColorsTemplate = () => {
+  const block = COLOR_BUTTONS
+    .map((color) => createColorTemplate(color))
     .join(``);
 
   return (
@@ -138,7 +138,7 @@ const createCardColorsTemplate = () => {
   );
 };
 
-const createCardImageTemplate = (image) => (
+const createImageTemplate = (image) => (
   `<label class="card__img-wrap">
     <input
       type="file"
@@ -153,7 +153,7 @@ const createCardImageTemplate = (image) => (
   </label>`
 );
 
-const createCardHashtagBtnTemplate = (value) => (
+const createHashtagBtnTemplate = (value) => (
   `<span class="card__hashtag-inner">
     <input
       type="hidden"
@@ -170,7 +170,7 @@ const createCardHashtagBtnTemplate = (value) => (
   </span>`
 );
 
-const createCardHashtagInputTemplate = () => (
+const createHashtagInputTemplate = () => (
   `<label>
     <input
       type="text"
@@ -181,9 +181,9 @@ const createCardHashtagInputTemplate = () => (
   </label>`
 );
 
-const createCardHashtagsTemplate = (hashtags) => {
+const createHashtagsTemplate = (hashtags) => {
   const block = hashtags
-    .map((hashtag) => createCardHashtagBtnTemplate(hashtag))
+    .map((hashtag) => createHashtagBtnTemplate(hashtag))
     .join(``);
 
   return (
@@ -191,34 +191,34 @@ const createCardHashtagsTemplate = (hashtags) => {
       <div class="card__hashtag-list">
         ${block}
       </div>
-      ${createCardHashtagInputTemplate()}
+      ${createHashtagInputTemplate()}
     </div>`
   );
 };
 
-const createCardStatusBtnsTemplate = () => (
+const createStatusBtnsTemplate = () => (
   `<div class="card__status-btns">
     <button class="card__save" type="submit">save</button>
     <button class="card__delete" type="button">delete</button>
   </div>`
 );
 
-const createCardTemplate = (cardObject) => (
+const createTemplate = (object) => (
   `<article class="card card--edit card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createCardBtnsTemlate(cardObject.controls)}
-      ${createCardColorBarTemplate()}
-      ${createCardTextareaTemplate(cardObject.text)}
+      ${createBtnsTemlate(object.controls)}
+      ${createColorBarTemplate()}
+      ${createTextareaTemplate(object.text)}
        <div class="card__settings">
           <div class="card__details">
-            ${createCardDatesTemplate(cardObject.deadlineToggleValue, cardObject.date, cardObject.time, cardObject.repeatStatus)}
-            ${createCardHashtagsTemplate(cardObject.hashtags)}
+            ${createDatesTemplate(object.deadlineToggleValue, object.date, object.time, object.repeatStatus)}
+            ${createHashtagsTemplate(object.hashtags)}
           </div>
-          ${createCardImageTemplate(cardObject.image)}
-          ${createCardColorsTemplate()}
+          ${createImageTemplate(object.image)}
+          ${createColorsTemplate()}
         </div>
-          ${createCardStatusBtnsTemplate()}
+          ${createStatusBtnsTemplate()}
        </div>
     </form>
   </article>`
@@ -228,8 +228,10 @@ const createNumberRange = (limit) => (
   Array.from(new Array(limit), (_, i) => i)
 );
 
-export default (limit, cardObject) => (
+const createCardsTemplate = (limit, object) => (
   createNumberRange(limit)
-    .map(() => createCardTemplate(cardObject))
+    .map(() => createTemplate(object))
     .join(``)
 );
+
+export {createCardsTemplate};

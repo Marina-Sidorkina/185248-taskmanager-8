@@ -1,6 +1,6 @@
-import {generateRandomNumber as randomNumberGeneratingFunction} from './utils.js';
-import createFilterTemplate from './create-filter-template.js';
-import createCardsTemplate from './create-cards-template.js';
+import {generateRandomNumber} from './utils.js';
+import {createFilterTemplate} from './templates/filter.js';
+import {createCardsTemplate} from './templates/cards.js';
 
 const CARD_LIMIT = 7;
 
@@ -18,7 +18,7 @@ const card = {
 const addFilterClickEventListener = () => {
   document.querySelectorAll(`.filter__input`).forEach((element) => {
     element.addEventListener(`click`, () => {
-      boardElement.innerHTML = createCardsTemplate(randomNumberGeneratingFunction(0, CARD_LIMIT), card);
+      boardElement.innerHTML = createCardsTemplate(generateRandomNumber(0, CARD_LIMIT), card);
     });
   });
 };

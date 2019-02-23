@@ -1,9 +1,9 @@
-import {generateRandomNumber as randomNumberGeneratingFunction} from './utils.js';
+import {generateRandomNumber} from '../utils.js';
 
-const FILTERS_NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
+const NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
 
-const createFilterInputTemplate = (name, status) => {
-  const number = randomNumberGeneratingFunction(1, 15);
+const createInputTemplate = (name, status) => {
+  const number = generateRandomNumber(1, 15);
 
   return (
     `<input
@@ -20,11 +20,13 @@ const createFilterInputTemplate = (name, status) => {
   );
 };
 
-export default () => (
-  FILTERS_NAMES
+const createFilterTemplate = () => (
+  NAMES
     .map((name) => {
       const status = name === `TODAY` ? `checked` : ``;
-      return createFilterInputTemplate(name, status);
+      return createInputTemplate(name, status);
     })
     .join(``)
 );
+
+export {createFilterTemplate};
