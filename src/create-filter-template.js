@@ -1,9 +1,9 @@
-import {generateRandomNumber} from './utils.js';
+import {generateRandomNumber as randomNumberGeneratingFunction} from './utils.js';
 
 const FILTERS_NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
 
 const createFilterInputTemplate = (name, status) => {
-  const number = generateRandomNumber(1, 15);
+  const number = randomNumberGeneratingFunction(1, 15);
 
   return (
     `<input
