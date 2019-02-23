@@ -1,4 +1,5 @@
 import {generateRandomNumber} from './utils.js';
+
 import {createFilterTemplate} from './templates/filter.js';
 import {createCardsTemplate} from './templates/cards.js';
 

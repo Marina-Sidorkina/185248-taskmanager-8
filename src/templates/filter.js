@@ -20,7 +20,7 @@ const createInputTemplate = (name, status) => {
   );
 };
 
-const createFilterTemplate = () => (
+export const createFilterTemplate = () => (
   NAMES
     .map((name) => {
       const status = name === `TODAY` ? `checked` : ``;
@@ -28,5 +28,3 @@ const createFilterTemplate = () => (
     })
     .join(``)
 );
-
-export {createFilterTemplate};
