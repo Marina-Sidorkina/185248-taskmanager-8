@@ -98,7 +98,7 @@ const createDeadlineTemplate = (card) => (
 const createRepeatToggleTemplate = (card) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">
-      ${(Array.from(card.repeatingDays).some((value) => value[1])) ? `yes` : `no`}
+      ${(Array.from(card.repeatingDays).some(([_, isRepeatable]) => isRepeatable)) ? `yes` : `no`}
     </span>
   </button>`
 );

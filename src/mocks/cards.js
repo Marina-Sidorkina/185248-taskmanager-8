@@ -31,13 +31,9 @@ const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.
 const generateRandomBoolean = () => Math.random() >= 0.5;
 const generateRandomDate = () => (Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000);
 const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRandomBoolean()]));
+const generateTags = () => TAGS.sort(() => Math.random() - 0.5).slice(tagsLimit.MIN, generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX));
 
 const createNumberRange = (limit) => Array.from(new Array(limit), (_, i) => i);
-
-const generateTags = () => {
-  const array = TAGS.sort(() => Math.random() - 0.5);
-  return array.slice(tagsLimit.MIN, generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX));
-};
 
 const generateCard = () => ({
   title: getRandomArrayElement(TITLES),
