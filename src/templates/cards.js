@@ -1,6 +1,6 @@
-const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
+import {COLORS} from '../constants';
+
 const STATUSES = [`edit`, `archive`, `favorites`];
-const COLORS = [`black`, `yellow`, `blue`, `green`, `pink`];
 const MONTHS = [
   `January`,
   `February`,
@@ -74,18 +74,31 @@ const createDeadlineInputTemlate = (parameter, setting) => (
   </label>`
 );
 
-const changeTimeFormat = (hours) => (hours <= 12) ? {time: hours, id: `AM`} : {time: hours - 12, id: `PM`};
+const getDueDate = (card) => {
+  const date = new Date(card.dueDate);
+  return {
+    day: date.getDate(),
+    month: MONTHS[date.getMonth()],
+    hour: (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12),
+    minute: date.getMinutes(),
+    id: (date.getHours() <= 12) ? `AM` : `PM`
+  };
+};
 
 const createDeadlineTemplate = (card) => (
   `<fieldset class="card__date-deadline">
-    ${createDeadlineInputTemlate(`date`, new Date(card.dueDate).getDate() + ` ` + MONTHS[new Date(card.dueDate).getMonth()])}
-    ${createDeadlineInputTemlate(`time`, changeTimeFormat(new Date(card.dueDate).getHours()).time + `:` + new Date(card.dueDate).getMinutes() + ` ` + changeTimeFormat(new Date(card.dueDate).getHours()).id)}
+    ${createDeadlineInputTemlate(`date`, getDueDate(card).day + ` `
+      + getDueDate(card).month)}
+    ${createDeadlineInputTemlate(`time`, getDueDate(card).hour + `:`
+      + getDueDate(card).minute + ` `
+      + getDueDate(card).id)}
   </fieldset>`
 );
 
 const createRepeatToggleTemplate = (card) => (
   `<button class="card__repeat-toggle" type="button">
-    repeat:<span class="card__repeat-status">${DAYS.some((day) => card.repeatingDays[day] === true) ? `yes` : `no`}</span>
+    repeat:<span class="card__repeat-status">${card.repeatingDays.forEach((value) =>
+    value ? `yes` : `no`)}</span>
   </button>`
 );
 
@@ -96,7 +109,7 @@ const createRepeatDayInputTemplate = (card, day) => (
     id="repeat-${day}-4"
     name="repeat"
     value="${day}"
-    ${card.repeatingDays[day] ? `checked` : ``}
+    ${card.repeatingDays.get(day) ? `checked` : ``}
   />
   <label class="card__repeat-day" for="repeat-${day}-4"
     >${day}</label
@@ -104,8 +117,8 @@ const createRepeatDayInputTemplate = (card, day) => (
 );
 
 const createRepeatDaysTemplate = (card) => {
-  const block = DAYS
-    .map((day) => createRepeatDayInputTemplate(card, day))
+  const block = Array.from(card.repeatingDays)
+    .map((day) => createRepeatDayInputTemplate(card, day[0]))
     .join(``);
 
   return (
@@ -126,7 +139,7 @@ const createDatesTemplate = (card) => (
   </div>`
 );
 
-const createColorTemplate = (card, color) => (
+const createColorTemplate = (card) => (color) => (
   `<input
     type="radio"
     id="color-${color}-4"
@@ -144,7 +157,7 @@ const createColorTemplate = (card, color) => (
 
 const createColorsTemplate = (card) => {
   const block = COLORS
-    .map((color) => createColorTemplate(card, color))
+    .map(createColorTemplate(card))
     .join(``);
 
   return (
@@ -172,7 +185,7 @@ const createPictureTemplate = (card) => (
   </label>`
 );
 
-const createHashtagButtonTemplate = (value) => (
+const createHashtagButtonTemplate = (tag) => (
   `<span class="card__hashtag-inner">
     <input
       type="hidden"
@@ -181,7 +194,7 @@ const createHashtagButtonTemplate = (value) => (
       class="card__hashtag-hidden-input"
     />
     <button type="button" class="card__hashtag-name">
-      #${value}
+      #${tag}
     </button>
     <button type="button" class="card__hashtag-delete">
       delete
@@ -202,7 +215,7 @@ const createHashtagInputTemplate = () => (
 
 const createHashtagsTemplate = (card) => {
   const block = card.tags
-    .map((tag) => createHashtagButtonTemplate(tag))
+    .map(createHashtagButtonTemplate)
     .join(``);
 
   return (
@@ -244,5 +257,7 @@ const createCardTemplate = (card) => (
 );
 
 export const createCardsTemplate = (cards) => (
-  cards.map((card) => createCardTemplate(card)).join(``)
+  cards
+    .map(createCardTemplate)
+    .join(``)
 );

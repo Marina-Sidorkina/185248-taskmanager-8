@@ -1,7 +1,7 @@
-import {generateRandomNumber} from './utils.js';
-import {createFilterTemplate} from './templates/filter.js';
-import {createCardsTemplate} from './templates/cards.js';
-import {generateCards} from './mocks/cards.js';
+import {generateRandomNumber} from './utils';
+import {createFilterTemplate} from './templates/filter';
+import {createCardsTemplate} from './templates/cards';
+import {generateCards} from './mocks/cards';
 
 const CARD_LIMIT = 7;
 

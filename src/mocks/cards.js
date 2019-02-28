@@ -1,9 +1,12 @@
-import {generateRandomNumber} from '../utils.js';
+import {generateRandomNumber} from '../utils';
+import {COLORS} from '../constants';
 
-const tagslimit = {
+const tagsLimit = {
   MIN: 0,
   MAX: 3
 };
+
+const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
 
 const TITLES = [
   `Изучить теорию`,
@@ -23,21 +26,24 @@ const TAGS = [
   `keks`
 ];
 
-const COLORS = [
-  `black`,
-  `yellow`,
-  `blue`,
-  `green`,
-  `pink`
-];
-
-const generateRandomBoolean = () => Math.random() >= 0.5;
-
 const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
 
+const generateRandomBoolean = () => Math.random() >= 0.5;
 const generateRandomDate = () => (Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000);
+const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRandomBoolean()]));
 
-const generateTags = () => Array.from(new Set(createNumberRange(generateRandomNumber(tagslimit.MIN, tagslimit.MAX)).map(() => getRandomArrayElement(TAGS))));
+const createNumberRange = (limit) => Array.from(new Array(limit), (_, i) => i);
+
+const generateTags = () => {
+  const array = TAGS.slice();
+  return createNumberRange(generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX))
+    .map(() => {
+      const index = generateRandomNumber(0, array.length - 1);
+      const tag = array[index];
+      array.splice(index, 1);
+      return tag;
+    });
+};
 
 const generateCard = () => ({
   title: getRandomArrayElement(TITLES),
@@ -46,23 +52,11 @@ const generateCard = () => ({
   tags: generateTags(),
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: getRandomArrayElement(COLORS),
-  repeatingDays: {
-    mo: generateRandomBoolean(),
-    tu: generateRandomBoolean(),
-    we: generateRandomBoolean(),
-    th: generateRandomBoolean(),
-    fr: generateRandomBoolean(),
-    sa: generateRandomBoolean(),
-    su: generateRandomBoolean()
-  },
+  repeatingDays: generateRepeatingDays(),
   isFavorite: generateRandomBoolean(),
   isDone: generateRandomBoolean()
 });
 
-const createNumberRange = (limit) => (
-  Array.from(new Array(limit), (_, i) => i)
-);
-
 export const generateCards = (limit) => (
-  createNumberRange(limit).map(() => generateCard())
+  createNumberRange(limit).map(generateCard)
 );
