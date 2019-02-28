@@ -39,7 +39,7 @@ const generateCard = () => ({
   title: getRandomArrayElement(TITLES),
   deadlineToggleValue: true,
   dueDate: generateRandomDate(),
-  tags: generateTags(),
+  tags: new Set(generateTags()),
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: getRandomArrayElement(COLORS),
   repeatingDays: generateRepeatingDays(),

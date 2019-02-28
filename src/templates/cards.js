@@ -215,7 +215,7 @@ const createHashtagInputTemplate = () => (
 );
 
 const createHashtagsTemplate = (card) => {
-  const block = card.tags
+  const block = Array.from(card.tags)
     .map(createHashtagButtonTemplate)
     .join(``);
 
