@@ -35,14 +35,8 @@ const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRand
 const createNumberRange = (limit) => Array.from(new Array(limit), (_, i) => i);
 
 const generateTags = () => {
-  const array = TAGS.slice();
-  return createNumberRange(generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX))
-    .map(() => {
-      const index = generateRandomNumber(0, array.length - 1);
-      const tag = array[index];
-      array.splice(index, 1);
-      return tag;
-    });
+  const array = TAGS.sort(() => Math.random() - 0.5);
+  return array.slice(tagsLimit.MIN, generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX));
 };
 
 const generateCard = () => ({
