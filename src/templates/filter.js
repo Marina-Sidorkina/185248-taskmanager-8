@@ -1,15 +1,23 @@
-export const createFilterTemplate = (data) => {
+const createFilterTemplate = (data) => {
   return (
     `<input
       type="radio"
-      id="filter__${data._name.toLowerCase()}"
+      id="filter__${data.name.toLowerCase()}"
       class="filter__input visually-hidden"
       name="filter"
-      value="${data._number}"
-      ${data._status}
+      value="${data.number}"
+      ${data.status}
     />
-    <label for="filter__${data._name.toLowerCase()}" class="filter__label">
-      ${data._name} <span class="filter__all-count">${data._number}</span></label
+    <label for="filter__${data.name.toLowerCase()}" class="filter__label">
+      ${data.name} <span class="filter__all-count">${data.number}</span></label
     >`
   );
 };
+
+export const createFiltersTemplate = (data) => (
+  data
+    .map((item) => (
+      createFilterTemplate(item)
+    ))
+    .join(``)
+);

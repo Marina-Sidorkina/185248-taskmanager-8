@@ -1,40 +1,43 @@
-import {generateRandomNumber} from '../utils';
-import {createFilterTemplate} from '../templates/filter';
+import {createFiltersTemplate} from '../templates/filter';
 
 export default class Filter {
-  constructor(name) {
-    this._name = name;
-    this._status = name === `TODAY` ? `checked` : ``;
-    this._number = generateRandomNumber(1, 15);
-    this._element = null;
-    this._onInputChange = this._onInputChange.bind(this);
+  constructor(data) {
+    this._data = data;
+
+    this._onClick = null;
+    this._onFilterClick = this._onFilterClick.bind(this);
+  }
+
+  get element() {
+    return this._element;
   }
 
   get template() {
-    return createFilterTemplate(this);
+    return createFiltersTemplate(this._data);
   }
 
-  set onChange(fn) {
-    this._onChange = fn;
+  set onClick(fn) {
+    this._onClick = fn;
   }
 
-  _onInputChange() {
-    return typeof this._onChange === `function` && this._onChange();
+  _onFilterClick() {
+    return typeof this._onClick === `function` && this._onClick();
   }
 
   _bind() {
-    this
-      ._element.input
-      .addEventListener(`change`, this._onInputChange);
+    if (this._element) {
+      this
+        ._element
+        .forEach((item) => {
+          item.addEventListener(`click`, this._onFilterClick);
+        });
+    }
   }
 
   render() {
     const newElement = document.createElement(`div`);
     newElement.innerHTML = this.template;
-    this._element = {
-      input: newElement.firstChild,
-      label: newElement.lastChild
-    };
+    this._element = Array.from(newElement.children).map((element) => element);
     this._bind();
     return this._element;
   }
