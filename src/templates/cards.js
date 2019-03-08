@@ -51,14 +51,14 @@ const createTextareaTemplate = (card) => (
       <textarea
         class="card__text"
         placeholder="Start typing your text here..."
-        name="text">${card._title}</textarea>
+        name="text">${card._data.title}</textarea>
     </label>
   </div>`
 );
 
 const createDeadlineToggleTemplate = (card) => (
   `<button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${card._deadlineToggleValue ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${card._data.deadlineToggleValue ? `yes` : `no`}</span>
   </button>`
 );
 
@@ -75,7 +75,7 @@ const createDeadlineInputTemlate = (parameter, setting) => (
 );
 
 const getDueDate = (card) => {
-  const date = new Date(card._dueDate);
+  const date = new Date(card._data.dueDate);
   return {
     day: date.getDate(),
     month: MONTHS[date.getMonth()],
@@ -98,7 +98,7 @@ const createDeadlineTemplate = (card) => (
 const createRepeatToggleTemplate = (card) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">
-      ${card._isRepeated() ? `yes` : `no`}
+      ${card.isRepeated ? `yes` : `no`}
     </span>
   </button>`
 );
@@ -110,7 +110,7 @@ const createRepeatDayInputTemplate = (card, day) => (
     id="repeat-${day}-4"
     name="repeat"
     value="${day}"
-    ${card._repeatingDays.get(day) ? `checked` : ``}
+    ${card._data.repeatingDays.get(day) ? `checked` : ``}
   />
   <label class="card__repeat-day" for="repeat-${day}-4"
     >${day}</label
@@ -118,7 +118,7 @@ const createRepeatDayInputTemplate = (card, day) => (
 );
 
 const createRepeatDaysTemplate = (card) => {
-  const block = Array.from(card._repeatingDays)
+  const block = Array.from(card._data.repeatingDays)
     .map((day) => createRepeatDayInputTemplate(card, day[0]))
     .join(``);
 
@@ -147,7 +147,7 @@ const createColorTemplate = (card) => (color) => (
     class="card__color-input card__color-input--${color} visually-hidden"
     name="color"
     value="${color}"
-    ${(color === card._color) ? `checked` : ``}
+    ${(color === card._data.color) ? `checked` : ``}
   />
   <label
     for="color-${color}-4"
@@ -179,7 +179,7 @@ const createPictureTemplate = (card) => (
       name="img"
     />
     <img
-      src="${card._picture}"
+      src="${card._data.picture}"
       alt="task picture"
       class="card__img"
     />
@@ -215,7 +215,7 @@ const createHashtagInputTemplate = () => (
 );
 
 const createHashtagsTemplate = (card) => {
-  const block = Array.from(card._tags)
+  const block = Array.from(card._data.tags)
     .map(createHashtagButtonTemplate)
     .join(``);
 
