@@ -1,7 +1,8 @@
-import {generateRandomNumber} from '../utils';
 import {getRandomArrayElement} from '../utils';
 import {generateRandomBoolean} from '../utils';
 import {generateRandomDate} from '../utils';
+import {generateRandomArray} from '../utils';
+import {createNumberRange} from '../utils';
 
 import {COLORS} from '../constants';
 
@@ -31,15 +32,12 @@ const TAGS = [
 ];
 
 const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRandomBoolean()]));
-const generateTags = () => TAGS.sort(() => Math.random() - 0.5).slice(tagsLimit.MIN, generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX));
-
-const createNumberRange = (limit) => Array.from(new Array(limit), (_, i) => i);
 
 const generateCard = () => ({
   title: getRandomArrayElement(TITLES),
   deadlineToggleValue: true,
   dueDate: generateRandomDate(),
-  tags: new Set(generateTags()),
+  tags: new Set(generateRandomArray(TAGS, tagsLimit.MIN, tagsLimit.MAX)),
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: getRandomArrayElement(COLORS),
   repeatingDays: generateRepeatingDays(),

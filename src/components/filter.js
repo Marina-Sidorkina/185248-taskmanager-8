@@ -1,12 +1,12 @@
-import {createFiltersTemplate} from '../templates/filter';
+import {createFilterTemplate} from '../templates/filter';
 import {createElement} from '../utils';
 
 export default class Filter {
   constructor(data) {
     this._data = data;
 
-    this._onClick = null;
-    this._onFilterClick = this._onFilterClick.bind(this);
+    this._onChange = null;
+    this._onFilterChange = this._onFilterChange.bind(this);
   }
 
   get element() {
@@ -14,30 +14,30 @@ export default class Filter {
   }
 
   get template() {
-    return createFiltersTemplate(this._data);
+    return createFilterTemplate(this._data);
   }
 
-  set onClick(fn) {
-    this._onClick = fn;
+  set onChange(fn) {
+    this._onChange = fn;
   }
 
-  _onFilterClick() {
-    return typeof this._onClick === `function` && this._onClick();
+  _onFilterChange() {
+    return typeof this._onChange === `function` && this._onChange();
   }
 
   _bind() {
     if (this._element) {
       this
         ._element
-        .forEach((item) => {
-          item.addEventListener(`click`, this._onFilterClick);
+        .querySelectorAll(`.filter__input`)
+        .forEach((element) => {
+          element.addEventListener(`change`, this._onFilterChange);
         });
     }
   }
 
   render() {
-    const setCallback = (newElement) => Array.from(newElement.children).map((element) => element);
-    this._element = createElement(this.template, setCallback);
+    this._element = createElement(this.template);
     this._bind();
     return this._element;
   }

@@ -9,7 +9,7 @@ import Filter from './components/filter';
 const CARD_LIMIT = 7;
 
 const boardElement = document.querySelector(`.board__tasks`);
-const filterNavElement = document.querySelector(`.main__filter`);
+const mainElement = document.querySelector(`main`);
 
 const addCards = (limit) => {
   generateCards(limit).forEach((data) => {
@@ -30,10 +30,8 @@ const addCards = (limit) => {
 const addFilter = (data) => {
   const filterComponent = new Filter(data);
   const filterElement = filterComponent.render();
-  filterElement.forEach((element) => {
-    filterNavElement.appendChild(element);
-  });
-  filterComponent.onClick = () => {
+  mainElement.insertBefore(filterElement, mainElement.children[2]);
+  filterComponent.onChange = () => {
     boardElement.innerHTML = ``;
     addCards(generateRandomNumber(0, CARD_LIMIT));
   };
