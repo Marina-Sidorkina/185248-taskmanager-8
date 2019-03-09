@@ -9,31 +9,31 @@ import Filter from './components/filter';
 const CARD_LIMIT = 7;
 
 const boardElement = document.querySelector(`.board__tasks`);
-const filterElement = document.querySelector(`.main__filter`);
+const filterNavElement = document.querySelector(`.main__filter`);
 
 const addCards = (limit) => {
   generateCards(limit).forEach((data) => {
-    const componentEdit = new CardEdit(data);
-    const componentView = new CardView(data);
-    const elementEdit = componentEdit.render();
-    const elementView = componentView.render();
-    componentView.onEdit = () => {
-      boardElement.replaceChild(elementEdit, elementView);
-      componentEdit.onSubmit = () => {
-        boardElement.replaceChild(elementView, elementEdit);
+    const editComponent = new CardEdit(data);
+    const viewComponent = new CardView(data);
+    const editElement = editComponent.render();
+    const viewElement = viewComponent.render();
+    viewComponent.onEdit = () => {
+      boardElement.replaceChild(editElement, viewElement);
+      editComponent.onSubmit = () => {
+        boardElement.replaceChild(viewElement, editElement);
       };
     };
-    boardElement.appendChild(elementView);
+    boardElement.appendChild(viewElement);
   });
 };
 
 const addFilter = (data) => {
-  const componentFilter = new Filter(data);
-  const elementFilter = componentFilter.render();
-  elementFilter.forEach((element) => {
-    filterElement.appendChild(element);
+  const filterComponent = new Filter(data);
+  const filterElement = filterComponent.render();
+  filterElement.forEach((element) => {
+    filterNavElement.appendChild(element);
   });
-  componentFilter.onClick = () => {
+  filterComponent.onClick = () => {
     boardElement.innerHTML = ``;
     addCards(generateRandomNumber(0, CARD_LIMIT));
   };

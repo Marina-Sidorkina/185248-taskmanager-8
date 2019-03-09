@@ -1,4 +1,5 @@
 import {createFiltersTemplate} from '../templates/filter';
+import {createElement} from '../utils';
 
 export default class Filter {
   constructor(data) {
@@ -35,9 +36,8 @@ export default class Filter {
   }
 
   render() {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = this.template;
-    this._element = Array.from(newElement.children).map((element) => element);
+    const setCallback = (newElement) => Array.from(newElement.children).map((element) => element);
+    this._element = createElement(this.template, setCallback);
     this._bind();
     return this._element;
   }

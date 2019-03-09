@@ -1,4 +1,8 @@
 import {generateRandomNumber} from '../utils';
+import {getRandomArrayElement} from '../utils';
+import {generateRandomBoolean} from '../utils';
+import {generateRandomDate} from '../utils';
+
 import {COLORS} from '../constants';
 
 const tagsLimit = {
@@ -26,10 +30,6 @@ const TAGS = [
   `keks`
 ];
 
-const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
-
-const generateRandomBoolean = () => Math.random() >= 0.5;
-const generateRandomDate = () => (Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000);
 const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRandomBoolean()]));
 const generateTags = () => TAGS.sort(() => Math.random() - 0.5).slice(tagsLimit.MIN, generateRandomNumber(tagsLimit.MIN, tagsLimit.MAX));
 

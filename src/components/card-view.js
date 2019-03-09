@@ -1,4 +1,5 @@
 import {createCardTemplate} from '../templates/cards';
+import {createElement} from '../utils';
 
 export default class Card {
   constructor(data) {
@@ -51,9 +52,7 @@ export default class Card {
   }
 
   render() {
-    const newElement = document.createElement(`div`);
-    newElement.innerHTML = this.template;
-    this._element = newElement.firstChild;
+    this._element = createElement(this.template);
     this._bind();
     return this._element;
   }
