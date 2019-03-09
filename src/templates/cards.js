@@ -16,17 +16,17 @@ const MONTHS = [
   `December`
 ];
 
-const createButtonTemlate = (card, value) => (
+const createButtonTemlate = (isFavorite, value) => (
   `<button type="button" class="card__btn card__btn--${value}
-    ${(!card.isFavorite && value === `favorites`) ? `card__btn--disabled` : ``}">
+    ${(!isFavorite && value === `favorites`) ? `card__btn--disabled` : ``}">
     ${value}
   </button>`
 );
 
-const createButtonsTemlate = (card) => {
+const createButtonsTemlate = (isFavorite) => {
   const block = STATUSES
     .map((value) => (
-      createButtonTemlate(card, value)
+      createButtonTemlate(isFavorite, value)
     ))
     .join(``);
 
@@ -98,7 +98,7 @@ const createDeadlineTemplate = (card) => (
 const createRepeatToggleTemplate = (card) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">
-      ${(Array.from(card.repeatingDays).some(([_, isRepeatable]) => isRepeatable)) ? `yes` : `no`}
+      ${card.isRepeated ? `yes` : `no`}
     </span>
   </button>`
 );
@@ -236,11 +236,11 @@ const createStatusButtonsTemplate = () => (
   </div>`
 );
 
-const createCardTemplate = (card) => (
-  `<article class="card card--edit card--yellow card--repeat">
+export const createCardTemplate = (card, isFavorite) => (
+  `<article class="card card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createButtonsTemlate(card)}
+      ${createButtonsTemlate(isFavorite)}
       ${createColorBarTemplate()}
       ${createTextareaTemplate(card)}
        <div class="card__settings">
@@ -257,8 +257,23 @@ const createCardTemplate = (card) => (
   </article>`
 );
 
-export const createCardsTemplate = (cards) => (
-  cards
-    .map(createCardTemplate)
-    .join(``)
+export const createCardEditTemplate = (card, isFavorite) => (
+  `<article class="card card--edit card--yellow card--repeat">
+    <form class="card__form" method="get">
+      <div class="card__inner">
+      ${createButtonsTemlate(isFavorite)}
+      ${createColorBarTemplate()}
+      ${createTextareaTemplate(card)}
+       <div class="card__settings">
+          <div class="card__details">
+            ${createDatesTemplate(card)}
+            ${createHashtagsTemplate(card)}
+          </div>
+          ${createPictureTemplate(card)}
+          ${createColorsTemplate(card)}
+        </div>
+          ${createStatusButtonsTemplate()}
+       </div>
+    </form>
+  </article>`
 );

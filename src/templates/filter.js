@@ -1,30 +1,19 @@
-import {generateRandomNumber} from '../utils';
-
-const NAMES = [`ALL`, `OVERDUE`, `TODAY`, `FAVORITES`, `Repeating`, `Tags`, `ARCHIVE`];
-
-const createInputTemplate = (name, status) => {
-  const number = generateRandomNumber(1, 15);
-
-  return (
-    `<input
-      type="radio"
-      id="filter__${name.toLowerCase()}"
-      class="filter__input visually-hidden"
-      name="filter"
-      value="${number}"
-      ${status}
-    />
-    <label for="filter__${name.toLowerCase()}" class="filter__label">
-      ${name} <span class="filter__all-count">${number}</span></label
-    >`
-  );
-};
-
-export const createFilterTemplate = () => (
-  NAMES
-    .map((name) => {
-      const status = name === `TODAY` ? `checked` : ``;
-      return createInputTemplate(name, status);
-    })
-    .join(``)
+export const createFilterTemplate = (data) => (
+  `<section class="main__filter filter container">
+    ${data
+      .map((item) => (
+        `<input
+          type="radio"
+          id="filter__${item.name.toLowerCase()}"
+          class="filter__input visually-hidden"
+          name="filter"
+          value="${item.number}"
+          ${item.status}
+        />
+        <label for="filter__${item.name.toLowerCase()}" class="filter__label">
+          ${item.name} <span class="filter__all-count">${item.number}</span></label
+        >`
+      ))
+      .join(``)}
+  </section>`
 );
