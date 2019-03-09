@@ -30,7 +30,8 @@ const addCards = (limit) => {
 const addFilter = (data) => {
   const filterComponent = new Filter(data);
   const filterElement = filterComponent.render();
-  mainElement.insertBefore(filterElement, mainElement.children[2]);
+  const nextElement = mainElement.children[2];
+  mainElement.insertBefore(filterElement, nextElement);
   filterComponent.onChange = () => {
     boardElement.innerHTML = ``;
     addCards(generateRandomNumber(0, CARD_LIMIT));

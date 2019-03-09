@@ -16,17 +16,17 @@ const MONTHS = [
   `December`
 ];
 
-const createButtonTemlate = (card, value) => (
+const createButtonTemlate = (isFavorite, value) => (
   `<button type="button" class="card__btn card__btn--${value}
-    ${(!card._state.isFavorite && value === `favorites`) ? `card__btn--disabled` : ``}">
+    ${(!isFavorite && value === `favorites`) ? `card__btn--disabled` : ``}">
     ${value}
   </button>`
 );
 
-const createButtonsTemlate = (card) => {
+const createButtonsTemlate = (isFavorite) => {
   const block = STATUSES
     .map((value) => (
-      createButtonTemlate(card, value)
+      createButtonTemlate(isFavorite, value)
     ))
     .join(``);
 
@@ -51,14 +51,14 @@ const createTextareaTemplate = (card) => (
       <textarea
         class="card__text"
         placeholder="Start typing your text here..."
-        name="text">${card._data.title}</textarea>
+        name="text">${card.title}</textarea>
     </label>
   </div>`
 );
 
 const createDeadlineToggleTemplate = (card) => (
   `<button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${card._data.deadlineToggleValue ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${card.deadlineToggleValue ? `yes` : `no`}</span>
   </button>`
 );
 
@@ -75,7 +75,7 @@ const createDeadlineInputTemlate = (parameter, setting) => (
 );
 
 const getDueDate = (card) => {
-  const date = new Date(card._data.dueDate);
+  const date = new Date(card.dueDate);
   return {
     day: date.getDate(),
     month: MONTHS[date.getMonth()],
@@ -110,7 +110,7 @@ const createRepeatDayInputTemplate = (card, day) => (
     id="repeat-${day}-4"
     name="repeat"
     value="${day}"
-    ${card._data.repeatingDays.get(day) ? `checked` : ``}
+    ${card.repeatingDays.get(day) ? `checked` : ``}
   />
   <label class="card__repeat-day" for="repeat-${day}-4"
     >${day}</label
@@ -118,7 +118,7 @@ const createRepeatDayInputTemplate = (card, day) => (
 );
 
 const createRepeatDaysTemplate = (card) => {
-  const block = Array.from(card._data.repeatingDays)
+  const block = Array.from(card.repeatingDays)
     .map((day) => createRepeatDayInputTemplate(card, day[0]))
     .join(``);
 
@@ -147,7 +147,7 @@ const createColorTemplate = (card) => (color) => (
     class="card__color-input card__color-input--${color} visually-hidden"
     name="color"
     value="${color}"
-    ${(color === card._data.color) ? `checked` : ``}
+    ${(color === card.color) ? `checked` : ``}
   />
   <label
     for="color-${color}-4"
@@ -179,7 +179,7 @@ const createPictureTemplate = (card) => (
       name="img"
     />
     <img
-      src="${card._data.picture}"
+      src="${card.picture}"
       alt="task picture"
       class="card__img"
     />
@@ -215,7 +215,7 @@ const createHashtagInputTemplate = () => (
 );
 
 const createHashtagsTemplate = (card) => {
-  const block = Array.from(card._data.tags)
+  const block = Array.from(card.tags)
     .map(createHashtagButtonTemplate)
     .join(``);
 
@@ -236,11 +236,11 @@ const createStatusButtonsTemplate = () => (
   </div>`
 );
 
-export const createCardTemplate = (card) => (
+export const createCardTemplate = (card, isFavorite) => (
   `<article class="card card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createButtonsTemlate(card)}
+      ${createButtonsTemlate(isFavorite)}
       ${createColorBarTemplate()}
       ${createTextareaTemplate(card)}
        <div class="card__settings">
@@ -257,11 +257,11 @@ export const createCardTemplate = (card) => (
   </article>`
 );
 
-export const createCardEditTemplate = (card) => (
+export const createCardEditTemplate = (card, isFavorite) => (
   `<article class="card card--edit card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createButtonsTemlate(card)}
+      ${createButtonsTemlate(isFavorite)}
       ${createColorBarTemplate()}
       ${createTextareaTemplate(card)}
        <div class="card__settings">

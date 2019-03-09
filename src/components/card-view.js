@@ -24,7 +24,7 @@ export default class Card {
   }
 
   get template() {
-    return createCardTemplate(this);
+    return createCardTemplate(this._data, this._state.isFavorite);
   }
 
   set onEdit(fn) {

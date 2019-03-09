@@ -4,6 +4,13 @@ import Card from './card-view';
 export default class CardEdit extends Card {
   constructor(data) {
     super(data);
+    this._element = null;
+
+    this._state = {
+      isDone: data.isDone,
+      isFavorite: data.isFavorite
+    };
+
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
@@ -18,7 +25,7 @@ export default class CardEdit extends Card {
   }
 
   get template() {
-    return createCardEditTemplate(this);
+    return createCardEditTemplate(this._data, this._state.isFavorite);
   }
 
   _bind() {
