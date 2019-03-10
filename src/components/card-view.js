@@ -1,22 +1,18 @@
 import {createCardTemplate} from '../templates/cards';
-import {createElement} from '../utils';
+import Initial from './initial';
 
-export default class Card {
+export default class Card extends Initial {
   constructor(data) {
-    this._data = data;
-    this._element = null;
+    super(data);
 
     this._state = {
       isDone: data.isDone,
-      isFavorite: data.isFavorite
+      isFavorite: data.isFavorite,
+      isRepeated: data.repeatingDays
     };
 
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-  }
-
-  get element() {
-    return this._element;
   }
 
   get isRepeated() {
@@ -24,7 +20,7 @@ export default class Card {
   }
 
   get template() {
-    return createCardTemplate(this._data, this._state.isFavorite);
+    return createCardTemplate(this._data, this._state.isFavorite, this._state.isRepeated);
   }
 
   set onEdit(fn) {
@@ -35,7 +31,7 @@ export default class Card {
     return typeof this._onEdit === `function` && this._onEdit();
   }
 
-  _bind() {
+  createListeners() {
     if (this._element) {
       this
         ._element
@@ -44,21 +40,10 @@ export default class Card {
     }
   }
 
-  _unbind() {
+  removeListeners() {
     this
       ._element
       .querySelector(`.card__btn--edit`)
       .removeEventListener(`click`, this._onEditButtonClick);
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this._bind();
-    return this._element;
-  }
-
-  unrender() {
-    this._unbind();
-    this._element = null;
   }
 }
