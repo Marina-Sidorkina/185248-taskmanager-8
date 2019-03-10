@@ -1,8 +1,8 @@
 import {createElement} from '../utils';
 
-export default class Initial {
+export default class BaseComponent {
   constructor(data) {
-    if (new.target === Initial) {
+    if (new.target === BaseComponent) {
       throw new Error(`Can't instantiate BaseComponent, only concrete one.`);
     }
     this._data = data;
@@ -18,8 +18,12 @@ export default class Initial {
     throw new Error(`You have to define template.`);
   }
 
-  createListeners() {}
-  removeListeners() {}
+  createListeners() {
+    throw new Error(`You have to define createListeners.`);
+  }
+  removeListeners() {
+    throw new Error(`You have to define removeListeners.`);
+  }
 
   render() {
     this._element = createElement(this.template);

@@ -2,9 +2,9 @@ import {generateRandomNumber} from './utils';
 import {generateCards} from './mocks/cards';
 import {generateFilterData} from './data/filter';
 
-import CardView from './components/card-view';
-import CardEdit from './components/card-edit';
-import Filter from './components/filter';
+import CardViewComponent from './components/card-view';
+import CardEditComponent from './components/card-edit';
+import FilterComponent from './components/filter';
 
 const CARD_LIMIT = 7;
 
@@ -13,22 +13,24 @@ const mainElement = document.querySelector(`main`);
 
 const addCards = (limit) => {
   generateCards(limit).forEach((data) => {
-    const editComponent = new CardEdit(data);
-    const viewComponent = new CardView(data);
-    const editElement = editComponent.render();
-    const viewElement = viewComponent.render();
+    const editComponent = new CardEditComponent(data);
+    const viewComponent = new CardViewComponent(data);
     viewComponent.onEdit = () => {
-      boardElement.replaceChild(editElement, viewElement);
-      editComponent.onSubmit = () => {
-        boardElement.replaceChild(viewElement, editElement);
-      };
+      editComponent.render();
+      boardElement.replaceChild(editComponent.element, viewComponent.element);
+      viewComponent.unrender();
     };
-    boardElement.appendChild(viewElement);
+    editComponent.onSubmit = () => {
+      viewComponent.render();
+      boardElement.replaceChild(viewComponent.element, editComponent.element);
+      editComponent.unrender();
+    };
+    boardElement.appendChild(viewComponent.render());
   });
 };
 
 const addFilter = (data) => {
-  const filterComponent = new Filter(data);
+  const filterComponent = new FilterComponent(data);
   const filterElement = filterComponent.render();
   const nextElement = mainElement.children[2];
   mainElement.insertBefore(filterElement, nextElement);
