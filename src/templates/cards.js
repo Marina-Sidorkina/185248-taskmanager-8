@@ -95,10 +95,10 @@ const createDeadlineTemplate = (card) => (
   </fieldset>`
 );
 
-const createRepeatToggleTemplate = (card) => (
+const createRepeatToggleTemplate = (isRepeated) => (
   `<button class="card__repeat-toggle" type="button">
     repeat:<span class="card__repeat-status">
-      ${card.isRepeated ? `yes` : `no`}
+      ${isRepeated ? `yes` : `no`}
     </span>
   </button>`
 );
@@ -131,11 +131,11 @@ const createRepeatDaysTemplate = (card) => {
   );
 };
 
-const createDatesTemplate = (card) => (
+const createDatesTemplate = (card, isRepeated) => (
   `<div class="card__dates">
     ${createDeadlineToggleTemplate(card)}
     ${createDeadlineTemplate(card)}
-    ${createRepeatToggleTemplate(card)}
+    ${createRepeatToggleTemplate(isRepeated)}
     ${createRepeatDaysTemplate(card)}
   </div>`
 );
@@ -236,7 +236,7 @@ const createStatusButtonsTemplate = () => (
   </div>`
 );
 
-export const createCardTemplate = (card, isFavorite) => (
+export const createCardTemplate = (card, isFavorite, isRepeated) => (
   `<article class="card card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -245,7 +245,7 @@ export const createCardTemplate = (card, isFavorite) => (
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card)}
+            ${createDatesTemplate(card, isRepeated)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}
@@ -257,7 +257,7 @@ export const createCardTemplate = (card, isFavorite) => (
   </article>`
 );
 
-export const createCardEditTemplate = (card, isFavorite) => (
+export const createCardEditTemplate = (card, isFavorite, isRepeated) => (
   `<article class="card card--edit card--yellow card--repeat">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -266,7 +266,7 @@ export const createCardEditTemplate = (card, isFavorite) => (
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card)}
+            ${createDatesTemplate(card, isRepeated)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}

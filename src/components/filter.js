@@ -1,16 +1,12 @@
 import {createFilterTemplate} from '../templates/filter';
-import {createElement} from '../utils';
+import BaseComponent from './base';
 
-export default class Filter {
+export default class FilterComponent extends BaseComponent {
   constructor(data) {
-    this._data = data;
+    super(data);
 
     this._onChange = null;
     this._onFilterChange = this._onFilterChange.bind(this);
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {
@@ -25,7 +21,7 @@ export default class Filter {
     return typeof this._onChange === `function` && this._onChange();
   }
 
-  _bind() {
+  createListeners() {
     if (this._element) {
       this
         ._element
@@ -36,9 +32,14 @@ export default class Filter {
     }
   }
 
-  render() {
-    this._element = createElement(this.template);
-    this._bind();
-    return this._element;
+  removeListeners() {
+    if (this._element) {
+      this
+        ._element
+        .querySelectorAll(`.filter__input`)
+        .forEach((element) => {
+          element.removeEventListener(`change`, this._onFilterChange);
+        });
+    }
   }
 }

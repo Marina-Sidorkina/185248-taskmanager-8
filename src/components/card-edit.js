@@ -1,15 +1,12 @@
 import {createCardEditTemplate} from '../templates/cards';
-import Card from './card-view';
+import BaseComponent from './base';
 
-export default class CardEdit extends Card {
+export default class CardEditComponent extends BaseComponent {
   constructor(data) {
     super(data);
-    this._element = null;
 
-    this._state = {
-      isDone: data.isDone,
-      isFavorite: data.isFavorite
-    };
+    this._state = Object.assign({}, this._state,
+        {isDone: data.isDone, isFavorite: data.isFavorite, isRepeated: data.repeatingDays});
 
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
@@ -25,17 +22,17 @@ export default class CardEdit extends Card {
   }
 
   get template() {
-    return createCardEditTemplate(this._data, this._state.isFavorite);
+    return createCardEditTemplate(this._data, this._state.isFavorite, this._state.isRepeated);
   }
 
-  _bind() {
+  createListeners() {
     this
       ._element
       .querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
-  _unbind() {
+  removeListeners() {
     this
       ._element
       .querySelector(`.card__form`)
