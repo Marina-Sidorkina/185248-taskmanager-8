@@ -5,12 +5,8 @@ export default class CardEditComponent extends BaseComponent {
   constructor(data) {
     super(data);
 
-    this._state = {
-      isRendered: false,
-      isDone: data.isDone,
-      isFavorite: data.isFavorite,
-      isRepeated: data.repeatingDays
-    };
+    this._state = Object.assign({}, this._state,
+        {isDone: data.isDone, isFavorite: data.isFavorite, isRepeated: data.repeatingDays});
 
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);

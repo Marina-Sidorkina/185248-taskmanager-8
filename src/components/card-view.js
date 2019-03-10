@@ -5,12 +5,8 @@ export default class CardViewComponent extends BaseComponent {
   constructor(data) {
     super(data);
 
-    this._state = {
-      isRendered: false,
-      isDone: data.isDone,
-      isFavorite: data.isFavorite,
-      isRepeated: data.repeatingDays
-    };
+    this._state = Object.assign({}, this._state,
+        {isDone: data.isDone, isFavorite: data.isFavorite, isRepeated: data.repeatingDays});
 
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
