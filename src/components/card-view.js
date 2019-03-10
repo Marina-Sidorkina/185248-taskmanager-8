@@ -6,6 +6,7 @@ export default class CardViewComponent extends BaseComponent {
     super(data);
 
     this._state = {
+      isRendered: false,
       isDone: data.isDone,
       isFavorite: data.isFavorite,
       isRepeated: data.repeatingDays

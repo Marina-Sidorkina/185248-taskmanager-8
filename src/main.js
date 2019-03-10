@@ -16,13 +16,11 @@ const addCards = (limit) => {
     const editComponent = new CardEditComponent(data);
     const viewComponent = new CardViewComponent(data);
     viewComponent.onEdit = () => {
-      editComponent.render();
-      boardElement.replaceChild(editComponent.element, viewComponent.element);
+      boardElement.replaceChild(editComponent.render(), viewComponent.element);
       viewComponent.unrender();
     };
     editComponent.onSubmit = () => {
-      viewComponent.render();
-      boardElement.replaceChild(viewComponent.element, editComponent.element);
+      boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();
     };
     boardElement.appendChild(viewComponent.render());

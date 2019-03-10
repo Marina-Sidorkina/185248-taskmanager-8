@@ -7,7 +7,9 @@ export default class BaseComponent {
     }
     this._data = data;
     this._element = null;
-    this._state = {};
+    this._state = {
+      isRendered: false
+    };
   }
 
   get element() {
@@ -26,13 +28,19 @@ export default class BaseComponent {
   }
 
   render() {
-    this._element = createElement(this.template);
-    this.createListeners();
+    if (!this._state.isRendered) {
+      this._element = createElement(this.template);
+      this.createListeners();
+      this._state.isRendered = true;
+    }
     return this._element;
   }
 
   unrender() {
-    this.removeListeners();
-    this._element = null;
+    if (this._state.isRendered) {
+      this.removeListeners();
+      this._element = null;
+      this._state.isRendered = false;
+    }
   }
 }
