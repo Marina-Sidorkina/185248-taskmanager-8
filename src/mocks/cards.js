@@ -11,8 +11,6 @@ const tagsLimit = {
   MAX: 3
 };
 
-const DAYS = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
-
 const TITLES = [
   `Изучить теорию`,
   `Пересмотреть лекцию`,
@@ -31,18 +29,23 @@ const TAGS = [
   `keks`
 ];
 
-const generateRepeatingDays = () => new Map(DAYS.map((day) => [day, generateRandomBoolean()]));
-
 const generateCard = () => ({
   title: getRandomArrayElement(TITLES),
-  deadlineToggleValue: true,
   dueDate: generateRandomDate(),
   tags: new Set(generateRandomArray(TAGS, tagsLimit.MIN, tagsLimit.MAX)),
   picture: `http://picsum.photos/100/100?r=${Math.random()}`,
   color: getRandomArrayElement(COLORS),
-  repeatingDays: generateRepeatingDays(),
+  repeatingDays: {
+    'mo': generateRandomBoolean(),
+    'tu': generateRandomBoolean(),
+    'we': generateRandomBoolean(),
+    'th': generateRandomBoolean(),
+    'fr': generateRandomBoolean(),
+    'sa': generateRandomBoolean(),
+    'su': generateRandomBoolean()
+  },
   isFavorite: generateRandomBoolean(),
-  isDone: generateRandomBoolean()
+  isDate: true
 });
 
 export const generateCards = (limit) => (

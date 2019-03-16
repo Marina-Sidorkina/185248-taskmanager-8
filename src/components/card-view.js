@@ -1,12 +1,16 @@
 import {createCardTemplate} from '../templates/cards';
 import BaseComponent from './base';
+import {makeArrayFromObject} from '../utils';
 
 export default class CardViewComponent extends BaseComponent {
-  constructor(data) {
-    super(data);
+  constructor(data, id) {
+    super(data, id);
 
-    this._state = Object.assign({}, this._state,
-        {isDone: data.isDone, isFavorite: data.isFavorite, isRepeated: data.repeatingDays});
+    this._state = Object.assign({}, this._state, {
+      isDate: data.dueDate,
+      isFavorite: data.isFavorite,
+      isRepeated: makeArrayFromObject(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
+    });
 
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -17,7 +21,13 @@ export default class CardViewComponent extends BaseComponent {
   }
 
   get template() {
-    return createCardTemplate(this._data, this._state.isFavorite, this._state.isRepeated);
+    return createCardTemplate(
+        this._data,
+        this._state.isFavorite,
+        this._state.isRepeated,
+        this._state.isDate,
+        this._id
+    );
   }
 
   set onEdit(fn) {
@@ -42,5 +52,12 @@ export default class CardViewComponent extends BaseComponent {
       ._element
       .querySelector(`.card__btn--edit`)
       .removeEventListener(`click`, this._onEditButtonClick);
+  }
+
+  update(data) {
+    this._data.title = data.title;
+    this._data.tags = data.tags;
+    this._data.color = data.color;
+    this._data.repeatingDays = data.repeatingDays;
   }
 }

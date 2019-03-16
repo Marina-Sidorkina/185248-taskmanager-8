@@ -1,11 +1,12 @@
 import {createElement} from '../utils';
 
 export default class BaseComponent {
-  constructor(data) {
+  constructor(data, id) {
     if (new.target === BaseComponent) {
       throw new Error(`Can't instantiate BaseComponent, only concrete one.`);
     }
     this._data = data;
+    this._id = id;
     this._element = null;
     this._state = {
       isRendered: false
@@ -26,6 +27,8 @@ export default class BaseComponent {
   removeListeners() {
     throw new Error(`You have to define removeListeners.`);
   }
+
+  update() {}
 
   render() {
     if (!this._state.isRendered) {

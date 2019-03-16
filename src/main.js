@@ -12,14 +12,24 @@ const boardElement = document.querySelector(`.board__tasks`);
 const mainElement = document.querySelector(`main`);
 
 const addCards = (limit) => {
-  generateCards(limit).forEach((data) => {
-    const editComponent = new CardEditComponent(data);
-    const viewComponent = new CardViewComponent(data);
+  generateCards(limit).forEach((data, id) => {
+    const editComponent = new CardEditComponent(data, id);
+    const viewComponent = new CardViewComponent(data, id);
     viewComponent.onEdit = () => {
       boardElement.replaceChild(editComponent.render(), viewComponent.element);
       viewComponent.unrender();
     };
-    editComponent.onSubmit = () => {
+    editComponent.onSubmit = (newObject) => {
+      const task = {
+        title: newObject.title,
+        tags: newObject.tags,
+        color: newObject.color,
+        repeatingDays: newObject.repeatingDays,
+        dueDate: newObject.dueDate
+      };
+      viewComponent.update(task);
+      viewComponent._state.isRepeated = editComponent._state.isRepeated;
+      viewComponent._state.isDate = editComponent._state.isDate;
       boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();
     };
