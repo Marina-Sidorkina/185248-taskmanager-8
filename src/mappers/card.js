@@ -4,6 +4,10 @@ export default (target) => (
     text: (value) => (target.title = value),
     color: (value) => (target.color = value),
     repeat: (value) => (target.repeatingDays[value] = true),
-    date: (value) => (target.dueDate[value])
+    date: (value) => (target.dueDate = `${value}, 2019, `),
+    time: (value) => {
+      const date = target.dueDate;
+      target.dueDate = Date.parse(date + value);
+    }
   }
 );

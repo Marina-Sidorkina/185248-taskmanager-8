@@ -10,7 +10,7 @@ import {checkRepeatingDays} from '../utils';
 import {removeCardColor} from '../utils';
 import {addNewHashtag} from '../utils';
 import {hashtagCheck} from '../constants';
-
+import {onChange} from '../picture';
 import flatpickr from 'flatpickr';
 
 export default class CardEditComponent extends BaseComponent {
@@ -30,6 +30,7 @@ export default class CardEditComponent extends BaseComponent {
     this._onColorChange = this._onColorChange.bind(this);
     this._onHashtagEnter = this._onHashtagEnter.bind(this);
     this._onHashtagDelete = this._onHashtagDelete.bind(this);
+    this._onPictureChange = this._onPictureChange.bind(this);
   }
 
   _onSubmitButtonClick(evt) {
@@ -85,6 +86,12 @@ export default class CardEditComponent extends BaseComponent {
     const hashtag = element.querySelector(`input`).value;
     this._data.tags.delete(hashtag);
     this._element.querySelector(`.card__hashtag-list`).removeChild(element);
+  }
+
+  _onPictureChange() {
+    const pictureInput = this._element.querySelector(`.card__img-input`);
+    const picturePreview = this._element.querySelector(`.card__img`);
+    onChange(pictureInput, picturePreview);
   }
 
   _onSubmitButtonClick(evt) {
@@ -155,6 +162,9 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
         element.addEventListener(`click`, this._onHashtagDelete);
       });
+    this.
+      _element.querySelector(`.card__img-input`)
+      .addEventListener(`change`, this._onPictureChange);
 
     if (this._state.isDate) {
       flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
@@ -183,6 +193,9 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
         element.addEventListener(`click`, this._onHashtagDelete);
       });
+    this.
+      _element.querySelector(`.card__img-input`)
+      .addEventListener(`change`, this._onPictureChange);
   }
 
   update(data) {

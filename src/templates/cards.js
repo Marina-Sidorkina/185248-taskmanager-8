@@ -1,21 +1,8 @@
 import {COLORS} from '../constants';
 import {makeArrayFromObject} from '../utils';
+import moment from 'moment';
 
 const STATUSES = [`edit`, `archive`, `favorites`];
-const MONTHS = [
-  `January`,
-  `February`,
-  `March`,
-  `April`,
-  `May`,
-  `June`,
-  `July`,
-  `August`,
-  `September`,
-  `October`,
-  `November`,
-  `December`
-];
 
 const createButtonTemlate = (isFavorite, value) => (
   `<button type="button" class="card__btn card__btn--${value}
@@ -75,26 +62,14 @@ const createDeadlineInputTemlate = (parameter, setting) => (
   </label>`
 );
 
-const getDueDate = (card) => {
+const createDeadlineTemplate = (card, isDate) => {
   const date = new Date(card.dueDate);
-  return {
-    day: date.getDate(),
-    month: MONTHS[date.getMonth()],
-    hour: (date.getHours() <= 12) ? date.getHours() : (date.getHours() - 12),
-    minute: date.getMinutes(),
-    id: (date.getHours() <= 12) ? `AM` : `PM`
-  };
+  return `<fieldset class="card__date-deadline" ${!isDate && `disabled`}>
+    ${createDeadlineInputTemlate(`date`, moment(date).format(`D MMMM`))}
+    ${createDeadlineInputTemlate(`time`,
+      moment(date).format(`h:mm`) + ` ` + moment(date).format(`a`).toUpperCase())}
+  </fieldset>`;
 };
-
-const createDeadlineTemplate = (card, isDate) => (
-  `<fieldset class="card__date-deadline" ${!isDate && `disabled`}>
-    ${createDeadlineInputTemlate(`date`, getDueDate(card).day + ` `
-      + getDueDate(card).month)}
-    ${createDeadlineInputTemlate(`time`, getDueDate(card).hour + `:`
-      + getDueDate(card).minute + ` `
-      + getDueDate(card).id)}
-  </fieldset>`
-);
 
 const createRepeatToggleTemplate = (isRepeated) => (
   `<button class="card__repeat-toggle" type="button">
