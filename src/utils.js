@@ -28,3 +28,30 @@ export const checkRepeatingDays = (object, array) => {
     }
   }
 };
+
+export const removeCardColor = (element, array) => {
+  for (const color of array) {
+    const cls = `card--` + color;
+    element.classList.remove(cls);
+  }
+};
+
+export const addNewHashtag = (element) => {
+  const hashtagsList = element.querySelector(`.card__hashtag-list`);
+  const hashtag = element.querySelector(`.card__hashtag-input`).value.replace(/#/, ``);
+  const template = `<span class="card__hashtag-inner">
+    <input
+      type="hidden"
+      name="hashtag"
+      value="${hashtag}"
+      class="card__hashtag-hidden-input"
+    />
+    <button type="button" class="card__hashtag-name">
+      #${hashtag}
+    </button>
+    <button type="button" class="card__hashtag-delete">
+      delete
+    </button>
+  </span>`;
+  hashtagsList.appendChild(createElement(template));
+};

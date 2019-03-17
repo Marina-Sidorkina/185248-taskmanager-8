@@ -1,11 +1,17 @@
-import {createCardEditTemplate} from '../templates/cards';
+import {COLORS} from '../constants';
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
 import getCardMapper from '../mappers/card';
+import {createCardEditTemplate} from '../templates/cards';
 import {resetDisabilityStatus} from '../utils';
 import {resetYesNoStatus} from '../utils';
 import {makeArrayFromObject} from '../utils';
 import {checkRepeatingDays} from '../utils';
+import {removeCardColor} from '../utils';
+import {addNewHashtag} from '../utils';
+import {hashtagCheck} from '../constants';
+
+import flatpickr from 'flatpickr';
 
 export default class CardEditComponent extends BaseComponent {
   constructor(data, id) {
@@ -19,8 +25,11 @@ export default class CardEditComponent extends BaseComponent {
 
     this._onSubmit = null;
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
-    this._onChangeDate = this._onChangeDate.bind(this);
-    this._onChangeRepeated = this._onChangeRepeated.bind(this);
+    this._onDateChange = this._onDateChange.bind(this);
+    this._onRepeatChange = this._onRepeatChange.bind(this);
+    this._onColorChange = this._onColorChange.bind(this);
+    this._onHashtagEnter = this._onHashtagEnter.bind(this);
+    this._onHashtagDelete = this._onHashtagDelete.bind(this);
   }
 
   _onSubmitButtonClick(evt) {
@@ -28,17 +37,54 @@ export default class CardEditComponent extends BaseComponent {
     return typeof this._onSubmit === `function` && this._onSubmit();
   }
 
-  _onChangeDate() {
+  _onDateChange() {
     this._state.isDate = !this._state.isDate;
     resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.isDate);
     resetYesNoStatus(this._element.querySelector(`.card__date-status`), this._state.isDate);
   }
 
-  _onChangeRepeated() {
+  _onRepeatChange() {
     this._state.isRepeated = !this._state.isRepeated;
     this._element.classList.toggle(`card--repeat`);
     resetDisabilityStatus(this._element.querySelector(`.card__repeat-days`), this._state.isRepeated);
     resetYesNoStatus(this._element.querySelector(`.card__repeat-status`), this._state.isRepeated);
+  }
+
+  _onColorChange(evt) {
+    const color = `card--` + evt.target.value;
+    removeCardColor(this._element, COLORS);
+    this._element.classList.add(color);
+  }
+
+  _onHashtagEnter(evt) {
+    const element = this._element.querySelector(`.card__hashtag-input`);
+    if (evt.keyCode === 13) {
+      if (!hashtagCheck.HASH.test(element.value)) {
+        element.setCustomValidity(`Хештег должен начинаться с символа #`);
+      } else if (hashtagCheck.HASH_ONLY.test(element.value)) {
+        element.setCustomValidity(`Хештег не может состоять только из символа #`);
+      } else if (hashtagCheck.SPACE.test(element.value)) {
+        element.setCustomValidity(`Хештег не может содержать знак пробела`);
+      } else if (element.value.length > 8 || element.value.length < 3) {
+        element.setCustomValidity(`Один хештег не может содержать более 8 и менее 3 символов,
+          включая символ #`);
+      } else if (this._data.tags.size === 5) {
+        element.setCustomValidity(`Нельзя указывать более пяти хештегов`);
+      } else {
+        element.setCustomValidity(``);
+        event.preventDefault();
+        addNewHashtag(this._element);
+        this._data.tags.add(evt.target.value.replace(/#/, ``));
+        evt.target.value = ``;
+      }
+    }
+  }
+
+  _onHashtagDelete(evt) {
+    const element = evt.target.parentNode;
+    const hashtag = element.querySelector(`input`).value;
+    this._data.tags.delete(hashtag);
+    this._element.querySelector(`.card__hashtag-list`).removeChild(element);
   }
 
   _onSubmitButtonClick(evt) {
@@ -95,10 +141,25 @@ export default class CardEditComponent extends BaseComponent {
       .addEventListener(`submit`, this._onSubmitButtonClick);
     this.
       _element.querySelector(`.card__date-deadline-toggle`)
-      .addEventListener(`click`, this._onChangeDate);
+      .addEventListener(`click`, this._onDateChange);
     this.
     _element.querySelector(`.card__repeat-toggle`)
-    .addEventListener(`click`, this._onChangeRepeated);
+    .addEventListener(`click`, this._onRepeatChange);
+    this.
+    _element.querySelectorAll(`.card__color-input`)
+      .forEach((input) => input.addEventListener(`click`, this._onColorChange));
+    this.
+      _element.querySelector(`.card__hashtag-input`)
+      .addEventListener(`keypress`, this._onHashtagEnter);
+    this.
+      _element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
+        element.addEventListener(`click`, this._onHashtagDelete);
+      });
+
+    if (this._state.isDate) {
+      flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
+      flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+    }
   }
 
   removeListeners() {
@@ -108,10 +169,20 @@ export default class CardEditComponent extends BaseComponent {
       .removeEventListener(`submit`, this._onSubmitButtonClick);
     this.
       _element.querySelector(`.card__date-deadline-toggle`)
-      .removeEventListener(`click`, this._onChangeDate);
+      .removeEventListener(`click`, this._onDateChange);
     this.
       _element.querySelector(`.card__repeat-toggle`)
-      .removeEventListener(`click`, this._onChangeRepeated);
+      .removeEventListener(`click`, this._onRepeatChange);
+    this.
+      _element.querySelectorAll(`.card__color-input`)
+      .forEach((input) => input.removeEventListener(`click`, this._onColorChange));
+    this.
+      _element.querySelector(`.card__hashtag-input`)
+      .addEventListener(`keypress`, this._onHashtagEnter);
+    this.
+      _element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
+        element.addEventListener(`click`, this._onHashtagDelete);
+      });
   }
 
   update(data) {
