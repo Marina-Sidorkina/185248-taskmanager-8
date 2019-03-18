@@ -5,9 +5,6 @@ export default (target) => (
     color: (value) => (target.color = value),
     repeat: (value) => (target.repeatingDays[value] = true),
     date: (value) => (target.dueDate = `${value}, 2019, `),
-    time: (value) => {
-      const date = target.dueDate;
-      target.dueDate = Date.parse(date + value);
-    }
+    time: (value) => (target.dueDate = Date.parse(target.dueDate + value))
   }
 );

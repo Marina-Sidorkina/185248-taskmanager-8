@@ -1,12 +1,11 @@
 import {createElement} from '../utils';
 
 export default class BaseComponent {
-  constructor(data, id) {
+  constructor(data) {
     if (new.target === BaseComponent) {
       throw new Error(`Can't instantiate BaseComponent, only concrete one.`);
     }
     this._data = data;
-    this._id = id;
     this._element = null;
     this._state = {
       isRendered: false

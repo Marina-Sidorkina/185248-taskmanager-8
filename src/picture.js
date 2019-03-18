@@ -1,23 +1,16 @@
 const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
 
-const checkFileType = (file) => {
-  const fileName = file.name.toLowerCase();
-  return FILE_TYPES.some((ending) => fileName.endsWith(ending));
+const updatePreview = (file, imageElement) => {
+  const reader = new FileReader();
+  reader.addEventListener(`load`, function () {
+    imageElement.src = reader.result;
+  });
+  reader.readAsDataURL(file);
 };
 
-const loadAvatarPreview = (file, picturePreview) => {
-  if (checkFileType(file)) {
-    const reader = new FileReader();
-    reader.addEventListener(`load`, function () {
-      picturePreview.src = reader.result;
-    });
-    reader.readAsDataURL(file);
-  }
-};
-
-export const onChange = function (pictureInput, picturePreview) {
-  const file = pictureInput.files[0];
-  if (file) {
-    loadAvatarPreview(file, picturePreview);
+export const createPreview = function (fileElement, imageElement) {
+  const file = fileElement.files[0];
+  if (file && FILE_TYPES.some((ending) => file.name.toLowerCase().endsWith(ending))) {
+    updatePreview(file, imageElement);
   }
 };

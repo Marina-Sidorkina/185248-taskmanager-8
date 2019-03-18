@@ -19,17 +19,17 @@ const addCards = (limit) => {
       boardElement.replaceChild(editComponent.render(), viewComponent.element);
       viewComponent.unrender();
     };
-    editComponent.onSubmit = (newObject) => {
+    editComponent.onSubmit = (newData) => {
       const task = {
-        title: newObject.title,
-        tags: newObject.tags,
-        color: newObject.color,
-        repeatingDays: newObject.repeatingDays,
-        dueDate: newObject.dueDate
+        title: newData.title,
+        tags: newData.tags,
+        color: newData.color,
+        repeatingDays: newData.repeatingDays,
+        dueDate: newData.dueDate
       };
       viewComponent.update(task);
       viewComponent._state.isRepeated = editComponent._state.isRepeated;
-      viewComponent._state.isDate = editComponent._state.isDate;
+      viewComponent._state.hasDate = editComponent._state.hasDate;
       boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();
     };

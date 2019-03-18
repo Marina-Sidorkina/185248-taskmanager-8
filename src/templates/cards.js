@@ -1,5 +1,6 @@
 import {COLORS} from '../constants';
 import {makeArrayFromObject} from '../utils';
+import {createElement} from '../utils';
 import moment from 'moment';
 
 const STATUSES = [`edit`, `archive`, `favorites`];
@@ -44,9 +45,9 @@ const createTextareaTemplate = (card) => (
   </div>`
 );
 
-const createDeadlineToggleTemplate = (isDate) => (
+const createDeadlineToggleTemplate = (hasDate) => (
   `<button class="card__date-deadline-toggle" type="button">
-    date: <span class="card__date-status">${isDate ? `yes` : `no`}</span>
+    date: <span class="card__date-status">${hasDate ? `yes` : `no`}</span>
   </button>`
 );
 
@@ -62,9 +63,9 @@ const createDeadlineInputTemlate = (parameter, setting) => (
   </label>`
 );
 
-const createDeadlineTemplate = (card, isDate) => {
+const createDeadlineTemplate = (card, hasDate) => {
   const date = new Date(card.dueDate);
-  return `<fieldset class="card__date-deadline" ${!isDate && `disabled`}>
+  return `<fieldset class="card__date-deadline" ${!hasDate && `disabled`}>
     ${createDeadlineInputTemlate(`date`, moment(date).format(`D MMMM`))}
     ${createDeadlineInputTemlate(`time`,
       moment(date).format(`h:mm`) + ` ` + moment(date).format(`a`).toUpperCase())}
@@ -107,10 +108,10 @@ const createRepeatDaysTemplate = (card, isRepeated, id) => {
   );
 };
 
-const createDatesTemplate = (card, isRepeated, isDate, id) => (
+const createDatesTemplate = (card, isRepeated, hasDate, id) => (
   `<div class="card__dates">
-    ${createDeadlineToggleTemplate(isDate)}
-    ${createDeadlineTemplate(card, isDate)}
+    ${createDeadlineToggleTemplate(hasDate)}
+    ${createDeadlineTemplate(card, hasDate)}
     ${createRepeatToggleTemplate(isRepeated)}
     ${createRepeatDaysTemplate(card, isRepeated, id)}
   </div>`
@@ -212,7 +213,36 @@ const createStatusButtonsTemplate = () => (
   </div>`
 );
 
-export const createCardTemplate = (card, isFavorite, isRepeated, isDate, id) => (
+export const removeCardColor = (element, array) => {
+  for (const color of array) {
+    const cls = `card--` + color;
+    element.classList.remove(cls);
+  }
+};
+
+export const addNewHashtag = (element, initialLengthValue, newLengthValue, inputValue) => {
+  if (newLengthValue > initialLengthValue && inputValue.length !== 0) {
+    const hashtagsList = element.querySelector(`.card__hashtag-list`);
+    const hashtag = element.querySelector(`.card__hashtag-input`).value.replace(/#/, ``);
+    const template = `<span class="card__hashtag-inner">
+      <input
+        type="hidden"
+        name="hashtag"
+        value="${hashtag}"
+        class="card__hashtag-hidden-input"
+      />
+      <button type="button" class="card__hashtag-name">
+        #${hashtag}
+      </button>
+      <button type="button" class="card__hashtag-delete">
+        delete
+      </button>
+    </span>`;
+    hashtagsList.appendChild(createElement(template));
+  }
+};
+
+export const createCardTemplate = (card, isFavorite, isRepeated, hasDate, id) => (
   `<article class="card ${card.color ? `card--${card.color}` : `card--black`} ${isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -221,7 +251,7 @@ export const createCardTemplate = (card, isFavorite, isRepeated, isDate, id) => 
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card, isRepeated, isDate, id)}
+            ${createDatesTemplate(card, isRepeated, hasDate, id)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}
@@ -233,7 +263,7 @@ export const createCardTemplate = (card, isFavorite, isRepeated, isDate, id) => 
   </article>`
 );
 
-export const createCardEditTemplate = (card, isFavorite, isRepeated, isDate, id) => (
+export const createCardEditTemplate = (card, isFavorite, isRepeated, hasDate, id) => (
   `<article class="card card--edit ${card.color ? `card--${card.color}` : `card--black`} ${isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -242,7 +272,7 @@ export const createCardEditTemplate = (card, isFavorite, isRepeated, isDate, id)
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card, isRepeated, isDate, id)}
+            ${createDatesTemplate(card, isRepeated, hasDate, id)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}

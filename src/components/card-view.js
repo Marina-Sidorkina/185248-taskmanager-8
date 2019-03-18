@@ -4,10 +4,10 @@ import {makeArrayFromObject} from '../utils';
 
 export default class CardViewComponent extends BaseComponent {
   constructor(data, id) {
-    super(data, id);
-
+    super(data);
+    this._id = id;
     this._state = Object.assign({}, this._state, {
-      isDate: data.dueDate,
+      hasDate: data.dueDate,
       isFavorite: data.isFavorite,
       isRepeated: makeArrayFromObject(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
     });
@@ -25,7 +25,7 @@ export default class CardViewComponent extends BaseComponent {
         this._data,
         this._state.isFavorite,
         this._state.isRepeated,
-        this._state.isDate,
+        this._state.hasDate,
         this._id
     );
   }
