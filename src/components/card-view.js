@@ -1,6 +1,5 @@
 import {createCardTemplate} from '../templates/cards';
 import BaseComponent from './base';
-import {makeArrayFromObject} from '../utils';
 
 export default class CardViewComponent extends BaseComponent {
   constructor(data, id) {
@@ -9,7 +8,7 @@ export default class CardViewComponent extends BaseComponent {
     this._state = Object.assign({}, this._state, {
       hasDate: data.dueDate,
       isFavorite: data.isFavorite,
-      isRepeated: makeArrayFromObject(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
+      isRepeated: Object.entries(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
     });
 
     this._onEdit = null;

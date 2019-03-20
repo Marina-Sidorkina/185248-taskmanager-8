@@ -3,11 +3,8 @@ import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
 import getCardMapper from '../mappers/card';
 import {createCardEditTemplate} from '../templates/cards';
-import {removeCardColor} from '../templates/cards';
 import {addNewHashtag} from '../templates/cards';
-import {resetDisabilityStatus} from '../utils';
-import {resetYesNoStatus} from '../utils';
-import {makeArrayFromObject} from '../utils';
+
 import {checkRepeatingDays} from '../utils';
 import {hashtagCheck} from '../constants';
 import {createPreview} from '../picture';
@@ -20,7 +17,7 @@ export default class CardEditComponent extends BaseComponent {
     this._state = Object.assign({}, this._state, {
       hasDate: data.dueDate,
       isFavorite: data.isFavorite,
-      isRepeated: makeArrayFromObject(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
+      isRepeated: Object.entries(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
     });
 
     this._onSubmit = null;
@@ -39,22 +36,45 @@ export default class CardEditComponent extends BaseComponent {
     return typeof this._onSubmit === `function` && this._onSubmit();
   }
 
+  _resetDisabilityStatus(element, value) {
+    if (value) {
+      element.removeAttribute(`disabled`);
+    } else {
+      element.setAttribute(`disabled`, `disabled`);
+    }
+  }
+
+  _resetYesNoStatus(element, value) {
+    if (value) {
+      element.textContent = `yes`;
+    } else {
+      element.textContent = `no`;
+    }
+  }
+
+  _removeCardColor(element, array) {
+    for (const color of array) {
+      const cls = `card--` + color;
+      element.classList.remove(cls);
+    }
+  }
+
   _onDateChange() {
     this._state.hasDate = !this._state.hasDate;
-    resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.hasDate);
-    resetYesNoStatus(this._element.querySelector(`.card__date-status`), this._state.hasDate);
+    this._resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.hasDate);
+    this._resetYesNoStatus(this._element.querySelector(`.card__date-status`), this._state.hasDate);
   }
 
   _onRepeatChange() {
     this._state.isRepeated = !this._state.isRepeated;
     this._element.classList.toggle(`card--repeat`);
-    resetDisabilityStatus(this._element.querySelector(`.card__repeat-days`), this._state.isRepeated);
-    resetYesNoStatus(this._element.querySelector(`.card__repeat-status`), this._state.isRepeated);
+    this._resetDisabilityStatus(this._element.querySelector(`.card__repeat-days`), this._state.isRepeated);
+    this._resetYesNoStatus(this._element.querySelector(`.card__repeat-status`), this._state.isRepeated);
   }
 
   _onColorChange(evt) {
     const color = `card--` + evt.target.value;
-    removeCardColor(this._element, COLORS);
+    this._removeCardColor(this._element, COLORS);
     this._element.classList.add(color);
   }
 

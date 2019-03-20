@@ -1,5 +1,4 @@
 import {COLORS} from '../constants';
-import {makeArrayFromObject} from '../utils';
 import {createElement} from '../utils';
 import moment from 'moment';
 
@@ -95,7 +94,7 @@ const createRepeatDayInputTemplate = (card, day, id) => (
 );
 
 const createRepeatDaysTemplate = (card, isRepeated, id) => {
-  const block = makeArrayFromObject(card.repeatingDays)
+  const block = Object.entries(card.repeatingDays)
     .map((day) => createRepeatDayInputTemplate(card, day[0], id))
     .join(``);
 
@@ -212,13 +211,6 @@ const createStatusButtonsTemplate = () => (
     <button class="card__delete" type="button">delete</button>
   </div>`
 );
-
-export const removeCardColor = (element, array) => {
-  for (const color of array) {
-    const cls = `card--` + color;
-    element.classList.remove(cls);
-  }
-};
 
 export const addNewHashtag = (element, initialLengthValue, newLengthValue, inputValue) => {
   if (newLengthValue > initialLengthValue && inputValue.length !== 0) {

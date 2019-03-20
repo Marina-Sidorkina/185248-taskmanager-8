@@ -12,17 +12,8 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const resetDisabilityStatus = (element, value) => (
-  value ? element.removeAttribute(`disabled`) : element.setAttribute(`disabled`, `disabled`)
-);
-export const resetYesNoStatus = (element, value) => (
-  value ? (element.textContent = `yes`) : (element.textContent = `no`)
-);
-
-export const makeArrayFromObject = (object) => Object.keys(object).map((key) => [key, object[key]]);
-
 export const checkRepeatingDays = (object, array) => {
-  for (const pair of makeArrayFromObject(object)) {
+  for (const pair of Object.entries(object)) {
     if (!array.some((key) => key === pair[0])) {
       object[pair[0]] = false;
     }
