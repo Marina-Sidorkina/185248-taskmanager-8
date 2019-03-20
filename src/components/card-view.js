@@ -52,11 +52,4 @@ export default class CardViewComponent extends BaseComponent {
       .querySelector(`.card__btn--edit`)
       .removeEventListener(`click`, this._onEditButtonClick);
   }
-
-  update(data) {
-    this._data.title = data.title;
-    this._data.tags = data.tags;
-    this._data.color = data.color;
-    this._data.repeatingDays = data.repeatingDays;
-  }
 }

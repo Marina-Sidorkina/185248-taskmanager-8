@@ -46,4 +46,10 @@ export default class BaseComponent {
       this._state.isRendered = false;
     }
   }
+
+  update(data) {
+    Object.keys(data).forEach((key) => {
+      this._data[key] = data[key];
+    });
+  }
 }

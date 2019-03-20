@@ -240,12 +240,4 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelector(`.card__img-input`)
       .addEventListener(`change`, this._onPictureChange);
   }
-
-  update(data) {
-    this._data.title = data.title;
-    this._data.tags = data.tags;
-    this._data.color = data.color;
-    this._data.repeatingDays = data.repeatingDays;
-    this._data.dueDate = data.dueDate;
-  }
 }
