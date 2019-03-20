@@ -1,24 +1,26 @@
+import flatpickr from 'flatpickr';
+
 import {COLORS} from '../constants';
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
 import getCardMapper from '../mappers/card';
 import {createCardEditTemplate} from '../templates/cards';
 import {addNewHashtag} from '../templates/cards';
-
-import {checkRepeatingDays} from '../utils';
+import {checkRepeatingDays, hasRepeatedDay} from '../utils';
 import {hashtagCheck} from '../constants';
 import {createPreview} from '../picture';
-import flatpickr from 'flatpickr';
+
 import 'flatpickr/dist/flatpickr.css';
 
 export default class CardEditComponent extends BaseComponent {
   constructor(data, id) {
     super(data);
     this._id = id;
-    this._state = Object.assign({}, this._state, {
-      hasDate: data.dueDate,
+
+    this.setState({
+      hasDate: data.hasDate,
       isFavorite: data.isFavorite,
-      isRepeated: Object.entries(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
+      isRepeated: hasRepeatedDay(data.repeatingDays)
     });
 
     this._onSubmit = null;
@@ -46,11 +48,7 @@ export default class CardEditComponent extends BaseComponent {
   }
 
   _resetYesNoStatus(element, value) {
-    if (value) {
-      element.textContent = `yes`;
-    } else {
-      element.textContent = `no`;
-    }
+    element.textContent = value ? `yes` : `no`;
   }
 
   _removeCardColor(element, array) {
@@ -61,13 +59,19 @@ export default class CardEditComponent extends BaseComponent {
   }
 
   _onDateChange() {
-    this._state.hasDate = !this._state.hasDate;
+    this.setState({
+      hasDate: !this._state.hasDate
+    })
+
     this._resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.hasDate);
     this._resetYesNoStatus(this._element.querySelector(`.card__date-status`), this._state.hasDate);
   }
 
   _onRepeatChange() {
-    this._state.isRepeated = !this._state.isRepeated;
+    this.setState({
+      isRepeated: !this._state.isRepeated
+    })
+
     this._element.classList.toggle(`card--repeat`);
     this._resetDisabilityStatus(this._element.querySelector(`.card__repeat-days`), this._state.isRepeated);
     this._resetYesNoStatus(this._element.querySelector(`.card__repeat-status`), this._state.isRepeated);
@@ -126,6 +130,7 @@ export default class CardEditComponent extends BaseComponent {
   _onPictureChange() {
     const pictureInput = this._element.querySelector(`.card__img-input`);
     const picturePreview = this._element.querySelector(`.card__img`);
+
     createPreview(pictureInput, picturePreview);
   }
 
@@ -136,6 +141,7 @@ export default class CardEditComponent extends BaseComponent {
     this._data.hasDate = this._state.hasDate;
     this._data.isRepeated = this._state.isRepeated;
     this.update(newData);
+
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
     }
@@ -172,7 +178,9 @@ export default class CardEditComponent extends BaseComponent {
         taskEditMapper[property](value);
       }
     }
+
     checkRepeatingDays(entry.repeatingDays, array);
+
     return entry;
   }
 

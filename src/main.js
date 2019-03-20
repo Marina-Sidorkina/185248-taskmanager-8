@@ -1,4 +1,4 @@
-import {generateRandomNumber} from './utils';
+import {generateRandomNumber, hasRepeatedDay} from './utils';
 import {generateCards} from './mocks/cards';
 import {generateFilterData} from './data/filter';
 
@@ -15,24 +15,22 @@ const addCards = (limit) => {
   generateCards(limit).forEach((data, id) => {
     const editComponent = new CardEditComponent(data, id);
     const viewComponent = new CardViewComponent(data, id);
+
     viewComponent.onEdit = () => {
       boardElement.replaceChild(editComponent.render(), viewComponent.element);
       viewComponent.unrender();
     };
+
     editComponent.onSubmit = (newData) => {
-      const task = {
-        title: newData.title,
-        tags: newData.tags,
-        color: newData.color,
-        repeatingDays: newData.repeatingDays,
-        dueDate: newData.dueDate
-      };
-      viewComponent.update(task);
-      viewComponent._state.isRepeated = editComponent._state.isRepeated;
-      viewComponent._state.hasDate = editComponent._state.hasDate;
+      viewComponent.update(newData);
+      viewComponent.setState({
+        isRepeated: hasRepeatedDay(newData.repeatingDays),
+        hasDate: Boolean(newData.dueDate)
+      });
       boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();
     };
+
     boardElement.appendChild(viewComponent.render());
   });
 };

@@ -12,7 +12,10 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const checkRepeatingDays = (object, array) => {
+
+export const hasRepeatedDay = (repeatingDays) => Object.entries(repeatingDays).some(([_, isRepeatable]) => isRepeatable)
+
+export const checkRepeatingDays = (object, array) => { // @TODO: rename
   for (const pair of Object.entries(object)) {
     if (!array.some((key) => key === pair[0])) {
       object[pair[0]] = false;

@@ -1,22 +1,21 @@
 import {createCardTemplate} from '../templates/cards';
 import BaseComponent from './base';
 
+import {hasRepeatedDay} from '../utils';
+
 export default class CardViewComponent extends BaseComponent {
   constructor(data, id) {
     super(data);
     this._id = id;
-    this._state = Object.assign({}, this._state, {
-      hasDate: data.dueDate,
+
+    this.setState({
+      asDate: data.hasDate,
       isFavorite: data.isFavorite,
-      isRepeated: Object.entries(data.repeatingDays).some(([_, isRepeatable]) => isRepeatable)
-    });
+      isRepeated: hasRepeatedDay(data.repeatingDays)
+    })
 
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
-  }
-
-  get isRepeated() {
-    return Array.from(this._data.repeatingDays).some(([_, isRepeatable]) => isRepeatable);
   }
 
   get template() {
