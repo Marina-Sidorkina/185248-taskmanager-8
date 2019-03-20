@@ -9,6 +9,7 @@ import {checkRepeatingDays} from '../utils';
 import {hashtagCheck} from '../constants';
 import {createPreview} from '../picture';
 import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 
 export default class CardEditComponent extends BaseComponent {
   constructor(data, id) {
