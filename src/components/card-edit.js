@@ -131,18 +131,16 @@ export default class CardEditComponent extends BaseComponent {
     };
   }
 
-  _saveDefaultDueDate(hours, minutes) {
-    const date = new Date(this._data.dueDate);
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
-  }
-
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
     const defaultTime = this._getDefaultTime();
     const formData = new FormData(this._element.querySelector(`.card__form`));
     const newData = Object.assign(this._processForm(formData), {isRepeated: this._state.isRepeated}, {hasDate: this._state.hasDate});
+    const newDueDate = new Date(newData.dueDate);
     if (!this._element.querySelector(`.card__time`).value) {
-      newData.dueDate = this._saveDefaultDueDate(defaultTime.hours, defaultTime.minutes);
+      newData.dueDate = new Date(newDueDate.getFullYear(),
+          newDueDate.getMonth(), newDueDate.getDate(),
+          defaultTime.hours, defaultTime.minutes);
     }
     this.update(newData);
     if (typeof this._onSubmit === `function`) {
