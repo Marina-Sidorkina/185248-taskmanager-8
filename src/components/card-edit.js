@@ -1,21 +1,18 @@
 import flatpickr from 'flatpickr';
+import moment from 'moment';
 
 import {COLORS} from '../constants';
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
-import getCardMapper from '../mappers/card';
-import {createCardEditTemplate} from '../templates/cards';
-import {addNewHashtag} from '../templates/cards';
-import {checkRepeatingDays, hasRepeatedDay} from '../utils';
-import {hashtagCheck} from '../constants';
+import {createCardEditTemplate, addNewHashtag} from '../templates/cards';
+import {markNotRepeatedDays, hasRepeatedDay, checkHashtagValidity, getNotReapeatedDays} from '../utils';
 import {createPreview} from '../picture';
 
 import 'flatpickr/dist/flatpickr.css';
 
 export default class CardEditComponent extends BaseComponent {
-  constructor(data, id) {
+  constructor(data) {
     super(data);
-    this._id = id;
 
     this.setState({
       hasDate: data.hasDate,
@@ -61,8 +58,8 @@ export default class CardEditComponent extends BaseComponent {
   _onDateChange() {
     this.setState({
       hasDate: !this._state.hasDate
-    })
-
+    });
+    this._data.hasDate = this._state.hasDate;
     this._resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.hasDate);
     this._resetYesNoStatus(this._element.querySelector(`.card__date-status`), this._state.hasDate);
   }
@@ -70,8 +67,8 @@ export default class CardEditComponent extends BaseComponent {
   _onRepeatChange() {
     this.setState({
       isRepeated: !this._state.isRepeated
-    })
-
+    });
+    this._data.isRepeated = this._state.isRepeated;
     this._element.classList.toggle(`card--repeat`);
     this._resetDisabilityStatus(this._element.querySelector(`.card__repeat-days`), this._state.isRepeated);
     this._resetYesNoStatus(this._element.querySelector(`.card__repeat-status`), this._state.isRepeated);
@@ -84,19 +81,11 @@ export default class CardEditComponent extends BaseComponent {
   }
 
   _onHashtagInvalid(evt) {
-    if (!hashtagCheck.HASH.test(evt.target.value) && evt.target.value.length !== 0) {
-      evt.target.setCustomValidity(`Хештег должен начинаться с символа #`);
-    } else if (hashtagCheck.HASH_ONLY.test(evt.target.value) && evt.target.value.length !== 0) {
-      evt.target.setCustomValidity(`Хештег не может состоять только из символа #`);
-    } else if (hashtagCheck.SPACE.test(evt.target.value)) {
-      evt.target.setCustomValidity(`Хештег не может содержать знак пробела`);
-    } else if ((evt.target.value.length > 8 && evt.target.value.length !== 0) || (evt.target.value.length < 3 && evt.target.value.length !== 0)) {
-      evt.target.setCustomValidity(`Один хештег не может содержать более 8 и менее 3 символов,
-        включая символ #`);
-    } else if (this._data.tags.size === 5) {
-      evt.target.setCustomValidity(`Нельзя указывать более пяти хештегов`);
-    } else {
+    const {isValid, error} = checkHashtagValidity(evt, this._data.tags);
+    if (isValid) {
       evt.target.setCustomValidity(``);
+    } else {
+      evt.target.setCustomValidity(error);
     }
   }
 
@@ -134,14 +123,28 @@ export default class CardEditComponent extends BaseComponent {
     createPreview(pictureInput, picturePreview);
   }
 
+  _getDefaultTime() {
+    const date = new Date(this._data.dueDate);
+    return {
+      hours: parseInt(moment(date).format(`h`), 10),
+      minutes: parseInt(moment(date).format(`mm`), 10)
+    };
+  }
+
+  _saveDefaultDueDate(hours, minutes) {
+    const date = new Date(this._data.dueDate);
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
+  }
+
   _onSubmitButtonClick(evt) {
     evt.preventDefault();
+    const defaultTime = this._getDefaultTime();
     const formData = new FormData(this._element.querySelector(`.card__form`));
-    const newData = this._processForm(formData);
-    this._data.hasDate = this._state.hasDate;
-    this._data.isRepeated = this._state.isRepeated;
+    const newData = Object.assign(this._processForm(formData), {isRepeated: this._state.isRepeated}, {hasDate: this._state.hasDate});
+    if (!this._element.querySelector(`.card__time`).value) {
+      newData.dueDate = this._saveDefaultDueDate(defaultTime.hours, defaultTime.minutes);
+    }
     this.update(newData);
-
     if (typeof this._onSubmit === `function`) {
       this._onSubmit(newData);
     }
@@ -151,47 +154,48 @@ export default class CardEditComponent extends BaseComponent {
     this._onSubmit = fn;
   }
 
-  get isRepeated() {
-    return Array.from(this._data.repeatingDays).some(([_, isRepeatable]) => isRepeatable);
-  }
-
   get template() {
     return createCardEditTemplate(
         this._data,
-        this._state.isFavorite,
-        this._state.isRepeated,
-        this._state.hasDate,
-        this._id
+        this._state
     );
+  }
+
+  _createCardMapper(target) {
+    return {
+      hashtag: (value) => (target.tags.add(value)),
+      text: (value) => (target.title = value),
+      color: (value) => (target.color = value),
+      repeat: (value) => (target.repeatingDays[value] = true),
+      date: (value) => (target.dueDate = `${value}, 2019, `),
+      time: (value) => (target.dueDate = Date.parse(target.dueDate + value))
+    };
   }
 
   _processForm(formData) {
     const entry = getCardDataPattern;
-    const taskEditMapper = getCardMapper(entry);
+    const taskEditMapper = this._createCardMapper(entry);
     let array = [];
     for (const pair of formData.entries()) {
       const [property, value] = pair;
-      if (property === `repeat`) {
-        array.push(value);
-      }
+      getNotReapeatedDays(property, value, array);
       if (taskEditMapper[property]) {
         taskEditMapper[property](value);
       }
     }
-
-    checkRepeatingDays(entry.repeatingDays, array);
-
+    markNotRepeatedDays(entry.repeatingDays, array);
     return entry;
   }
 
   createListeners() {
-    this
-      ._element
+    this._element
       .querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
-    this.
-      _element.querySelector(`.card__date-deadline-toggle`)
+
+    this._element
+      .querySelector(`.card__date-deadline-toggle`)
       .addEventListener(`click`, this._onDateChange);
+
     this.
     _element.querySelector(`.card__repeat-toggle`)
     .addEventListener(`click`, this._onRepeatChange);

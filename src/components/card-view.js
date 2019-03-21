@@ -4,15 +4,14 @@ import BaseComponent from './base';
 import {hasRepeatedDay} from '../utils';
 
 export default class CardViewComponent extends BaseComponent {
-  constructor(data, id) {
+  constructor(data) {
     super(data);
-    this._id = id;
 
     this.setState({
-      asDate: data.hasDate,
+      hasDate: data.hasDate,
       isFavorite: data.isFavorite,
       isRepeated: hasRepeatedDay(data.repeatingDays)
-    })
+    });
 
     this._onEdit = null;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
@@ -21,10 +20,7 @@ export default class CardViewComponent extends BaseComponent {
   get template() {
     return createCardTemplate(
         this._data,
-        this._state.isFavorite,
-        this._state.isRepeated,
-        this._state.hasDate,
-        this._id
+        this._state
     );
   }
 

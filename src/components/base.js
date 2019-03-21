@@ -6,8 +6,10 @@ export default class BaseComponent {
     if (new.target === BaseComponent) {
       throw new Error(`Can't instantiate BaseComponent, only concrete one.`);
     }
+
     this._data = _.cloneDeep(data);
     this._element = null;
+
     this._state = {
       isRendered: false
     };
@@ -43,7 +45,7 @@ export default class BaseComponent {
       this._element = null;
       this.setState({
         isRendered: false
-      })
+      });
     }
   }
 

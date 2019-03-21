@@ -12,9 +12,11 @@ const boardElement = document.querySelector(`.board__tasks`);
 const mainElement = document.querySelector(`main`);
 
 const addCards = (limit) => {
-  generateCards(limit).forEach((data, id) => {
-    const editComponent = new CardEditComponent(data, id);
-    const viewComponent = new CardViewComponent(data, id);
+  generateCards(limit).forEach((data, index) => {
+    const taskData = Object.assign(data, {id: index});
+
+    const editComponent = new CardEditComponent(taskData);
+    const viewComponent = new CardViewComponent(taskData);
 
     viewComponent.onEdit = () => {
       boardElement.replaceChild(editComponent.render(), viewComponent.element);
@@ -25,7 +27,7 @@ const addCards = (limit) => {
       viewComponent.update(newData);
       viewComponent.setState({
         isRepeated: hasRepeatedDay(newData.repeatingDays),
-        hasDate: Boolean(newData.dueDate)
+        hasDate: newData.hasDate
       });
       boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();

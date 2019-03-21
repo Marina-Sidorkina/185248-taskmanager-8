@@ -57,7 +57,7 @@ const createDeadlineInputTemlate = (parameter, setting) => (
       type="text"
       placeholder="${setting}"
       name="${parameter}"
-      value="${setting}"
+      value="${setting.toString()}"
     />
   </label>`
 );
@@ -79,23 +79,23 @@ const createRepeatToggleTemplate = (isRepeated) => (
   </button>`
 );
 
-const createRepeatDayInputTemplate = (card, day, id) => (
+const createRepeatDayInputTemplate = (card, day) => (
   `<input
     class="visually-hidden card__repeat-day-input"
     type="checkbox"
-    id="repeat-${day}-${id}"
+    id="repeat-${day}-${card.id}"
     name="repeat"
     value="${day}"
     ${card.repeatingDays[day] ? `checked` : ``}
   />
-  <label class="card__repeat-day" for="repeat-${day}-${id}"
+  <label class="card__repeat-day" for="repeat-${day}-${card.id}"
     >${day}</label
   >`
 );
 
-const createRepeatDaysTemplate = (card, isRepeated, id) => {
+const createRepeatDaysTemplate = (card, isRepeated) => {
   const block = Object.entries(card.repeatingDays)
-    .map((day) => createRepeatDayInputTemplate(card, day[0], id))
+    .map((day) => createRepeatDayInputTemplate(card, day[0], card.id))
     .join(``);
 
   return (
@@ -107,34 +107,34 @@ const createRepeatDaysTemplate = (card, isRepeated, id) => {
   );
 };
 
-const createDatesTemplate = (card, isRepeated, hasDate, id) => (
+const createDatesTemplate = (card, state) => (
   `<div class="card__dates">
-    ${createDeadlineToggleTemplate(hasDate)}
-    ${createDeadlineTemplate(card, hasDate)}
-    ${createRepeatToggleTemplate(isRepeated)}
-    ${createRepeatDaysTemplate(card, isRepeated, id)}
+    ${createDeadlineToggleTemplate(state.hasDate)}
+    ${createDeadlineTemplate(card, state.hasDate)}
+    ${createRepeatToggleTemplate(state.isRepeated)}
+    ${createRepeatDaysTemplate(card, state.isRepeated)}
   </div>`
 );
 
-const createColorTemplate = (card, id) => (color) => (
+const createColorTemplate = (card) => (color) => (
   `<input
     type="radio"
-    id="color-${color}-${id}"
+    id="color-${color}-${card.id}"
     class="card__color-input card__color-input--${color} visually-hidden"
     name="color"
     value="${color}"
     ${(color === card.color) ? `checked` : ``}
   />
   <label
-    for="color-${color}-${id}"
+    for="color-${color}-${card.id}"
     class="card__color card__color--${color}"
     >${color}</label
   >`
 );
 
-const createColorsTemplate = (card, id) => {
+const createColorsTemplate = (card) => {
   const block = COLORS
-    .map(createColorTemplate(card, id))
+    .map(createColorTemplate(card))
     .join(``);
 
   return (
@@ -234,20 +234,20 @@ export const addNewHashtag = (element, initialLengthValue, newLengthValue, input
   }
 };
 
-export const createCardTemplate = (card, isFavorite, isRepeated, hasDate, id) => (
-  `<article class="card ${card.color ? `card--${card.color}` : `card--black`} ${isRepeated ? `card--repeat` : ``}">
+export const createCardTemplate = (card, state) => (
+  `<article class="card ${card.color ? `card--${card.color}` : `card--black`} ${state.isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createButtonsTemlate(isFavorite)}
+      ${createButtonsTemlate(state.isFavorite)}
       ${createColorBarTemplate()}
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card, isRepeated, hasDate, id)}
+            ${createDatesTemplate(card, state)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}
-          ${createColorsTemplate(card, id)}
+          ${createColorsTemplate(card)}
         </div>
           ${createStatusButtonsTemplate()}
        </div>
@@ -255,20 +255,20 @@ export const createCardTemplate = (card, isFavorite, isRepeated, hasDate, id) =>
   </article>`
 );
 
-export const createCardEditTemplate = (card, isFavorite, isRepeated, hasDate, id) => (
-  `<article class="card card--edit ${card.color ? `card--${card.color}` : `card--black`} ${isRepeated ? `card--repeat` : ``}">
+export const createCardEditTemplate = (card, state) => (
+  `<article class="card card--edit ${card.color ? `card--${card.color}` : `card--black`} ${state.isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
-      ${createButtonsTemlate(isFavorite)}
+      ${createButtonsTemlate(state.isFavorite)}
       ${createColorBarTemplate()}
       ${createTextareaTemplate(card)}
        <div class="card__settings">
           <div class="card__details">
-            ${createDatesTemplate(card, isRepeated, hasDate, id)}
+            ${createDatesTemplate(card, state)}
             ${createHashtagsTemplate(card)}
           </div>
           ${createPictureTemplate(card)}
-          ${createColorsTemplate(card, id)}
+          ${createColorsTemplate(card)}
         </div>
           ${createStatusButtonsTemplate()}
        </div>
