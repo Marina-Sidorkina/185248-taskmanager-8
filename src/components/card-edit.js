@@ -3,8 +3,9 @@ import moment from 'moment';
 
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
-import {createCardEditTemplate, addNewHashtag} from '../templates/cards';
-import {markNotRepeatedDays, hasRepeatedDay, checkHashtagValidity, getNotReapeatedDays} from '../utils';
+import getRepeatingDays from '../patterns/repeating-days';
+import {createCardEditTemplate, createNewHashtagTemplate} from '../templates/cards';
+import {hasRepeatedDay, checkHashtagValidity, createElement} from '../utils';
 import {createPreview} from '../picture';
 
 import 'flatpickr/dist/flatpickr.css';
@@ -80,20 +81,25 @@ export default class CardEditComponent extends BaseComponent {
     this._element.classList.add(color);
   }
 
-  _onHashtagInvalid(evt) {
-    const {isValid, error} = checkHashtagValidity(evt, this._data.tags);
+  _onHashtagInvalid() {
+    const inputElement = this._element.querySelector(`.card__hashtag-input`);
+    const {isValid, error} = checkHashtagValidity(inputElement, this._data.tags);
     const validity = isValid ? `` : error;
-    evt.target.setCustomValidity(validity);
+    inputElement.setCustomValidity(validity);
   }
 
   _onHashtagEnter(evt) {
-    const element = this._element.querySelector(`.card__hashtag-input`);
-    if (evt.keyCode === 13 && element.checkValidity()) {
-      const length = this._data.tags.size;
-      element.setCustomValidity(``);
-      event.preventDefault();
+    const hashtagInputElement = this._element.querySelector(`.card__hashtag-input`);
+    const hashtagsInitialAmount = this._data.tags.size;
+    if (evt.keyCode === 13 && hashtagInputElement.checkValidity()) {
+      evt.preventDefault();
       this._data.tags.add(evt.target.value.replace(/#/, ``));
-      addNewHashtag(this._element, length, this._data.tags.size, evt.target.value);
+      if (this._data.tags.size > hashtagsInitialAmount && evt.target.value.length !== 0) {
+        const template = createNewHashtagTemplate(this._element
+          .querySelector(`.card__hashtag-input`).value.replace(/#/, ``));
+        this._element.querySelector(`.card__hashtag-list`)
+          .appendChild(createElement(template));
+      }
       this.
         _element.querySelectorAll(`.card__hashtag-delete`).forEach((elem) => {
           elem.removeEventListener(`click`, this._onHashtagDelete);
@@ -107,17 +113,17 @@ export default class CardEditComponent extends BaseComponent {
   }
 
   _onHashtagDelete(evt) {
-    const element = evt.target.parentNode;
-    const hashtag = element.querySelector(`input`).value;
-    this._data.tags.delete(hashtag);
-    this._element.querySelector(`.card__hashtag-list`).removeChild(element);
+    const targetElement = evt.target.parentNode;
+    const hashtagElementValue = targetElement.querySelector(`input`).value;
+    this._data.tags.delete(hashtagElementValue);
+    this._element.querySelector(`.card__hashtag-list`).removeChild(targetElement);
+    this._onHashtagInvalid();
   }
 
   _onPictureChange() {
-    const pictureInput = this._element.querySelector(`.card__img-input`);
-    const picturePreview = this._element.querySelector(`.card__img`);
-
-    createPreview(pictureInput, picturePreview);
+    const pictureInputElement = this._element.querySelector(`.card__img-input`);
+    const picturePreviewElement = this._element.querySelector(`.card__img`);
+    createPreview(pictureInputElement, picturePreviewElement);
   }
 
   _getDefaultTime() {
@@ -169,16 +175,18 @@ export default class CardEditComponent extends BaseComponent {
 
   _processForm(formData) {
     const entry = getCardDataPattern;
+    const newRepeatingDaysValues = getRepeatingDays();
     const taskEditMapper = this._createCardMapper(entry);
-    let array = [];
     for (const pair of formData.entries()) {
       const [property, value] = pair;
-      getNotReapeatedDays(property, value, array);
       if (taskEditMapper[property]) {
         taskEditMapper[property](value);
+        if (property === `repeat`) {
+          newRepeatingDaysValues[value] = true;
+        }
       }
     }
-    markNotRepeatedDays(entry.repeatingDays, array);
+    entry.repeatingDays = newRepeatingDaysValues;
     return entry;
   }
 

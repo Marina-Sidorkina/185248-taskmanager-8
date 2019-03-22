@@ -1,5 +1,4 @@
 import {COLORS} from '../constants';
-import {createElement} from '../utils';
 import moment from 'moment';
 
 const STATUSES = [`edit`, `archive`, `favorites`];
@@ -212,27 +211,22 @@ const createStatusButtonsTemplate = () => (
   </div>`
 );
 
-export const addNewHashtag = (element, initialLengthValue, newLengthValue, inputValue) => {
-  if (newLengthValue > initialLengthValue && inputValue.length !== 0) {
-    const hashtagsList = element.querySelector(`.card__hashtag-list`);
-    const hashtag = element.querySelector(`.card__hashtag-input`).value.replace(/#/, ``);
-    const template = `<span class="card__hashtag-inner">
-      <input
-        type="hidden"
-        name="hashtag"
-        value="${hashtag}"
-        class="card__hashtag-hidden-input"
-      />
-      <button type="button" class="card__hashtag-name">
-        #${hashtag}
-      </button>
-      <button type="button" class="card__hashtag-delete">
-        delete
-      </button>
-    </span>`;
-    hashtagsList.appendChild(createElement(template));
-  }
-};
+export const createNewHashtagTemplate = (hashtag) => (
+  `<span class="card__hashtag-inner">
+    <input
+      type="hidden"
+      name="hashtag"
+      value="${hashtag}"
+      class="card__hashtag-hidden-input"
+    />
+    <button type="button" class="card__hashtag-name">
+      #${hashtag}
+    </button>
+    <button type="button" class="card__hashtag-delete">
+      delete
+    </button>
+  </span>`
+);
 
 export const createCardTemplate = (card, state) => (
   `<article class="card ${card.color ? `card--${card.color}` : `card--black`} ${state.isRepeated ? `card--repeat` : ``}">

@@ -17,31 +17,16 @@ export const createElement = (template) => {
 
 export const hasRepeatedDay = (repeatingDays) => Object.entries(repeatingDays).some(([_, isRepeatable]) => isRepeatable);
 
-export const markNotRepeatedDays = (object, array) => {
-  for (const pair of Object.entries(object)) {
-    if (!array.some((key) => key === pair[0])) {
-      object[pair[0]] = false;
-    }
-  }
-};
-
-export const getNotReapeatedDays = (property, value, array) => {
-  if (property === `repeat`) {
-    array.push(value);
-  }
-  return array;
-};
-
-export const checkHashtagValidity = (evt, tags) => {
-  if (!hashtagCheck.HASH.test(evt.target.value)
-  && evt.target.value.length !== 0) {
+export const checkHashtagValidity = (inputElement, tags) => {
+  if (!hashtagCheck.HASH.test(inputElement.value)
+  && inputElement.value.length !== 0) {
     return {isValid: false, error: `Хештег должен начинаться с символа #`};
-  } else if (hashtagCheck.HASH_ONLY.test(evt.target.value)
-  && evt.target.value.length !== 0) {
+  } else if (hashtagCheck.HASH_ONLY.test(inputElement.value)
+  && inputElement.value.length !== 0) {
     return {isValid: false, error: `Хештег не может состоять только из символа #`};
-  } else if (hashtagCheck.SPACE.test(evt.target.value)) {
+  } else if (hashtagCheck.SPACE.test(inputElement.value)) {
     return {isValid: false, error: `Хештег не может содержать знак пробела`};
-  } else if ((evt.target.value.length > 8 && evt.target.value.length !== 0) || (evt.target.value.length < 3 && evt.target.value.length !== 0)) {
+  } else if ((inputElement.value.length > 8 && inputElement.value.length !== 0) || (inputElement.value.length < 3 && inputElement.value.length !== 0)) {
     return {isValid: false, error: `Один хештег не может содержать более 8 и менее 3 символов, включая символ #`};
   } else if (tags.size === 5) {
     return {isValid: false, error: `Нельзя указывать более пяти хештегов`};
