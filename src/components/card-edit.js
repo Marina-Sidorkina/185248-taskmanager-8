@@ -1,7 +1,6 @@
 import flatpickr from 'flatpickr';
 import moment from 'moment';
 
-import {COLORS} from '../constants';
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
 import {createCardEditTemplate, addNewHashtag} from '../templates/cards';
@@ -48,16 +47,17 @@ export default class CardEditComponent extends BaseComponent {
     element.textContent = value ? `yes` : `no`;
   }
 
-  _removeCardColor(element, array) {
-    for (const color of array) {
+  _removeCardColor(element, colors) {
+    for (const color of colors) {
       const cls = `card--` + color;
       element.classList.remove(cls);
     }
   }
 
   _onDateChange() {
+    const hasDate = !this._state.hasDate;
     this.setState({
-      hasDate: !this._state.hasDate
+      hasDate
     });
     this._data.hasDate = this._state.hasDate;
     this._resetDisabilityStatus(this._element.querySelector(`.card__date-deadline`), this._state.hasDate);
@@ -76,17 +76,14 @@ export default class CardEditComponent extends BaseComponent {
 
   _onColorChange(evt) {
     const color = `card--` + evt.target.value;
-    this._removeCardColor(this._element, COLORS);
+    this._removeCardColor(this._element, [`black`, `yellow`, `blue`, `green`, `pink`]);
     this._element.classList.add(color);
   }
 
   _onHashtagInvalid(evt) {
     const {isValid, error} = checkHashtagValidity(evt, this._data.tags);
-    if (isValid) {
-      evt.target.setCustomValidity(``);
-    } else {
-      evt.target.setCustomValidity(error);
-    }
+    const validity = isValid ? `` : error;
+    evt.target.setCustomValidity(validity);
   }
 
   _onHashtagEnter(evt) {
