@@ -1,12 +1,15 @@
 import {createElement} from '../utils';
+import cloneDeep from 'lodash.clonedeep';
 
 export default class BaseComponent {
   constructor(data) {
     if (new.target === BaseComponent) {
       throw new Error(`Can't instantiate BaseComponent, only concrete one.`);
     }
-    this._data = data;
+
+    this._data = cloneDeep(data);
     this._element = null;
+
     this._state = {
       isRendered: false
     };
@@ -40,7 +43,19 @@ export default class BaseComponent {
     if (this._state.isRendered) {
       this.removeListeners();
       this._element = null;
-      this._state.isRendered = false;
+      this.setState({
+        isRendered: false
+      });
     }
+  }
+
+  setState(newState = {}) {
+    this._state = Object.assign({}, this._state, newState);
+  }
+
+  update(data) {
+    Object.keys(data).forEach((key) => {
+      this._data[key] = data[key];
+    });
   }
 }

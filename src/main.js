@@ -1,4 +1,4 @@
-import {generateRandomNumber} from './utils';
+import {generateRandomNumber, hasRepeatedDay} from './utils';
 import {generateCards} from './mocks/cards';
 import {generateFilterData} from './data/filter';
 
@@ -12,17 +12,27 @@ const boardElement = document.querySelector(`.board__tasks`);
 const mainElement = document.querySelector(`main`);
 
 const addCards = (limit) => {
-  generateCards(limit).forEach((data) => {
-    const editComponent = new CardEditComponent(data);
-    const viewComponent = new CardViewComponent(data);
+  generateCards(limit).forEach((data, index) => {
+    const taskData = Object.assign(data, {id: index});
+
+    const editComponent = new CardEditComponent(taskData);
+    const viewComponent = new CardViewComponent(taskData);
+
     viewComponent.onEdit = () => {
       boardElement.replaceChild(editComponent.render(), viewComponent.element);
       viewComponent.unrender();
     };
-    editComponent.onSubmit = () => {
+
+    editComponent.onSubmit = (newData) => {
+      viewComponent.update(newData);
+      viewComponent.setState({
+        isRepeated: hasRepeatedDay(newData.repeatingDays),
+        hasDate: newData.hasDate
+      });
       boardElement.replaceChild(viewComponent.render(), editComponent.element);
       editComponent.unrender();
     };
+
     boardElement.appendChild(viewComponent.render());
   });
 };
