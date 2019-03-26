@@ -2,6 +2,16 @@ import {hashtagCheck} from './constants';
 
 export const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
 
+
+export const generateRandomColor = () => {
+  const letters = `0123456789abcdef`;
+  let color = `#`;
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 export const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max + 1 - min) + min);
 export const generateRandomBoolean = () => Math.random() >= 0.5;
 export const generateRandomDate = () => (Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000);

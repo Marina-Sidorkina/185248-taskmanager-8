@@ -29,11 +29,7 @@ export default class CardEditComponent extends BaseComponent {
     this._onHashtagDelete = this._onHashtagDelete.bind(this);
     this._onHashtagInvalid = this._onHashtagInvalid.bind(this);
     this._onPictureChange = this._onPictureChange.bind(this);
-  }
-
-  _onSubmitButtonClick(evt) {
-    evt.preventDefault();
-    return typeof this._onSubmit === `function` && this._onSubmit();
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
   }
 
   _resetDisabilityStatus(element, value) {
@@ -151,8 +147,17 @@ export default class CardEditComponent extends BaseComponent {
     }
   }
 
+  _onDeleteButtonClick(evt) {
+    evt.preventDefault();
+    return typeof this._onDelete === `function` && this._onDelete();
+  }
+
   set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   get template() {
@@ -220,6 +225,10 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelector(`.card__img-input`)
       .addEventListener(`change`, this._onPictureChange);
 
+    this.
+      _element.querySelector(`.card__delete`)
+      .addEventListener(`click`, this._onDeleteButtonClick);
+
     if (this._state.hasDate) {
       flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
       flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
@@ -254,5 +263,8 @@ export default class CardEditComponent extends BaseComponent {
     this.
       _element.querySelector(`.card__img-input`)
       .addEventListener(`change`, this._onPictureChange);
+    this.
+      _element.querySelector(`.card__delete`)
+      .removeEventListener(`click`, this._onDeleteButtonClick);
   }
 }

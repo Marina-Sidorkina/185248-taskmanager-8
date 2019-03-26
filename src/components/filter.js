@@ -5,20 +5,20 @@ export default class FilterComponent extends BaseComponent {
   constructor(data) {
     super(data);
 
-    this._onChange = null;
-    this._onFilterChange = this._onFilterChange.bind(this);
+    this._onClick = null;
+    this._onFilterClick = this._onFilterClick.bind(this);
   }
 
   get template() {
     return createFilterTemplate(this._data);
   }
 
-  set onChange(fn) {
-    this._onChange = fn;
+  set onClick(fn) {
+    this._onClick = fn;
   }
 
-  _onFilterChange() {
-    return typeof this._onChange === `function` && this._onChange();
+  _onFilterClick(evt) {
+    return typeof this._onClick === `function` && this._onClick(evt);
   }
 
   createListeners() {
@@ -27,7 +27,7 @@ export default class FilterComponent extends BaseComponent {
         ._element
         .querySelectorAll(`.filter__input`)
         .forEach((element) => {
-          element.addEventListener(`change`, this._onFilterChange);
+          element.addEventListener(`click`, this._onFilterClick);
         });
     }
   }
@@ -38,7 +38,7 @@ export default class FilterComponent extends BaseComponent {
         ._element
         .querySelectorAll(`.filter__input`)
         .forEach((element) => {
-          element.removeEventListener(`change`, this._onFilterChange);
+          element.removeEventListener(`click`, this._onFilterClick);
         });
     }
   }
