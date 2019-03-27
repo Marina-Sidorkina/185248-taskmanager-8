@@ -1,59 +1,45 @@
+/*
 import {hasRepeatedDay} from './utils';
-import {onStatisticsControlOpen, onStatisticsControlClose} from './statistics';
-import {generateCards} from './mocks/cards';
+import {onStatisticsControlOpen, onStatisticsControlClose} from '.lib//statistics';
 import {generateFilterData} from './data/filter';
-import CardViewComponent from './components/card-view';
-import CardEditComponent from './components/card-edit';
 import FilterComponent from './components/filter';
+*/
+import {generateCards} from './mocks/cards';
+import CardsComponent from './components/cards';
 
-const CARD_LIMIT = 7;
-const boardElement = document.querySelector(`.board__tasks`);
+/*
 const statisticsControlElement = document.querySelector(`#control__statistic`);
 const taskControlElement = document.querySelector(`#control__task`);
 const mainElement = document.querySelector(`main`);
-let initialCardsList = generateCards(CARD_LIMIT);
+*/
 
-const addCards = (cards) => {
-  cards.forEach((data, index) => {
-    const taskData = Object.assign(data, {id: index});
+const CARD_LIMIT = 7;
+const cards = generateCards(CARD_LIMIT);
+const cardsComponent = new CardsComponent(cards);
 
-    const editComponent = new CardEditComponent(taskData);
-    const viewComponent = new CardViewComponent(taskData);
+document.querySelector(`main`)
+  .insertAdjacentElement(`beforeend`, cardsComponent.render());
 
-    viewComponent.onEdit = () => {
-      boardElement.replaceChild(editComponent.render(), viewComponent.element);
-      viewComponent.unrender();
-    };
 
-    editComponent.onSubmit = (newData) => {
-      initialCardsList.forEach((card, id) => {
-        if (card.id === index) {
-          initialCardsList[id] = Object.assign({}, initialCardsList[id], newData);
-        }
-      });
-      viewComponent.update(newData);
-      viewComponent.setState({
-        isRepeated: hasRepeatedDay(newData.repeatingDays),
-        hasDate: newData.hasDate
-      });
-      boardElement.replaceChild(viewComponent.render(), editComponent.element);
-      editComponent.unrender();
-    };
+cardsComponent.onChange = ((updatedCards) => {
+  console.log(updatedCards);
+});
 
-    editComponent.onDelete = () => {
-      initialCardsList.forEach((card, id) => {
-        if (card.id === editComponent._data.id) {
-          initialCardsList[id] = null;
-        }
-      });
-      initialCardsList = initialCardsList.filter((card) => card !== null);
-      boardElement.removeChild(editComponent.element);
-      editComponent.unrender();
-    };
+/*
+const filtersComponent = new FiltersComponent(params);
+const statisticsComponent = new StatisticsComponent(cards);
 
-    boardElement.appendChild(viewComponent.render());
-  });
-};
+filtersComponent.onChange((filter) => {
+  const updatedCards = filter(cardsComponent.getData());
+  cardsComponent.updateData(updatedCards);
+
+  // statisticsComponent.updateData(updatedCards);
+});
+
+cardsComponent.onChange((updatedCards) => {
+  filtersComponent.updateData(updatedCards);
+  // statisticsComponent.updateData(updatedCards);
+});
 
 const getFilteredCards = () => ({
   'filter__all': (cards) => cards,
@@ -70,6 +56,11 @@ const addFilter = (data) => {
   const filterElement = filterComponent.render();
   const nextElement = mainElement.children[2];
   mainElement.insertBefore(filterElement, nextElement);
+
+  filterComponent.onSelect = (filterId) => {
+    //
+  };
+
   filterComponent.onClick = (evt) => {
     boardElement.innerHTML = ``;
     const filteredCardsList = getFilteredCards()[evt.target.id](initialCardsList);
@@ -84,3 +75,4 @@ statisticsControlElement.addEventListener(`change`,
 taskControlElement.addEventListener(`change`, () => {
   onStatisticsControlClose();
 });
+*/

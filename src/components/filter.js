@@ -1,7 +1,7 @@
 import {createFilterTemplate} from '../templates/filter';
 import BaseComponent from './base';
 
-export default class FilterComponent extends BaseComponent {
+export default class FiltersComponent extends BaseComponent {
   constructor(data) {
     super(data);
 

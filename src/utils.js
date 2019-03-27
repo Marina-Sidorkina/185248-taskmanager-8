@@ -1,8 +1,6 @@
 import {hashtagCheck} from './constants';
 
 export const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
-
-
 export const generateRandomColor = () => {
   const letters = `0123456789abcdef`;
   let color = `#`;

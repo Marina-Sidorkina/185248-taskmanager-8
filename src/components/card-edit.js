@@ -1,12 +1,11 @@
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-
 import BaseComponent from './base';
 import getCardDataPattern from '../patterns/card';
 import getRepeatingDays from '../patterns/repeating-days';
 import {createCardEditTemplate, createNewHashtagTemplate} from '../templates/cards';
 import {hasRepeatedDay, checkHashtagValidity, createElement} from '../utils';
-import {createPreview} from '../picture';
+import {createPreview} from '../lib/picture';
 
 import 'flatpickr/dist/flatpickr.css';
 

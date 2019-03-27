@@ -1,4 +1,4 @@
-import {createCardTemplate} from '../templates/cards';
+import {createCardViewTemplate} from '../templates/cards';
 import BaseComponent from './base';
 
 import {hasRepeatedDay} from '../utils';
@@ -18,7 +18,7 @@ export default class CardViewComponent extends BaseComponent {
   }
 
   get template() {
-    return createCardTemplate(
+    return createCardViewTemplate(
         this._data,
         this._state
     );

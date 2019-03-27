@@ -1,8 +1,8 @@
-import {COLORS} from './constants';
-import ChartComponent from './components/statistics';
-import {createElement, generateRandomColor} from './utils';
-import {createCanvasColorsTemplate} from './templates/canvas-colors';
-import {createCanvasTagsTemplate} from './templates/canvas-tags';
+import {COLORS} from '../constants';
+import ChartComponent from '../components/statistics';
+import {createElement, generateRandomColor} from '../utils';
+import {createCanvasColorsTemplate} from '../templates/canvas-colors';
+import {createCanvasTagsTemplate} from '../templates/canvas-tags';
 
 const boardContainerElement = document.querySelector(`.board`);
 const statisticsElement = document.querySelector(`.statistic`);
