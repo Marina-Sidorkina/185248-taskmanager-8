@@ -228,10 +228,6 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelector(`.card__delete`)
       .addEventListener(`click`, this._onDeleteButtonClick);
 
-    if (this._state.hasDate) {
-      flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
-      flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
-    }
   }
 
   removeListeners() {
@@ -265,5 +261,19 @@ export default class CardEditComponent extends BaseComponent {
     this.
       _element.querySelector(`.card__delete`)
       .removeEventListener(`click`, this._onDeleteButtonClick);
+  }
+  render() {
+    this._element = super.render();
+    if (this._state.hasDate) {
+      flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
+      flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+    }
+    return this._element;
+  }
+
+  unrender() {
+    flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`}).destroy();
+    flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`}).destroy();
+    super.unrender();
   }
 }

@@ -46,7 +46,8 @@ const generateCard = (id) => ({
     'su': generateRandomBoolean()
   },
   isFavorite: generateRandomBoolean(),
-  hasDate: true
+  hasDate: true,
+  isDone: generateRandomBoolean()
 });
 
 export const generateCards = (limit) => (

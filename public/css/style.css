@@ -757,8 +757,8 @@ body {
   border-bottom: 5px solid #000000;
 }
 .statistic__period {
-  width: 230px;
-  margin-right: 80px;
+  width: 350px;
+  margin-right: 0;
 }
 .statistic__period-title {
   margin-top: 0;

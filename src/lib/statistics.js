@@ -3,10 +3,18 @@ import ChartComponent from '../components/statistics';
 import {createElement, generateRandomColor} from '../utils';
 import {createCanvasColorsTemplate} from '../templates/canvas-colors';
 import {createCanvasTagsTemplate} from '../templates/canvas-tags';
+import flatpickr from 'flatpickr';
+import moment from 'moment';
 
 const statisticsElement = document.querySelector(`.statistic`);
 const statisticsTagsElement = document.querySelector(`.statistic__tags-wrap`);
 const statisticsColorsElement = document.querySelector(`.statistic__colors-wrap`);
+const statisticsStartElement = document.querySelector(`.statistic__period-input-start`);
+const statisticsEndElement = document.querySelector(`.statistic__period-input-end`);
+const statisticsContainerElement = document.
+    querySelector(`.statistic-input-wrap`);
+let timeStart;
+let timeEnd;
 
 const getAllTagsList = (initialCardsList) => {
   const tags = new Set();
@@ -59,6 +67,17 @@ export const getStatisticsByColors = (initialCardsList) => {
   return data;
 };
 
+const getFulfilledTasksAmount = (tasks) => {
+  const amount = tasks.filter((task) => {
+    return task.isDone
+      && moment(task.dueDate).format(`D MMMM`) >= statisticsStartElement.value
+      && moment(task.dueDate).format(`D MMMM`) <= statisticsEndElement.value;
+  }).length;
+  statisticsStartElement.placeholder = statisticsStartElement.value;
+  statisticsEndElement.placeholder = statisticsEndElement.value;
+  document.querySelector(`.statistic__task-found`).innerHTML = amount;
+};
+
 export const onStatisticsControlOpen = (initialCardsList) => {
   const tagsChart = new ChartComponent(getStatisticsByTags(initialCardsList));
   const colorsChart = new ChartComponent(getStatisticsByColors(initialCardsList));
@@ -66,8 +85,23 @@ export const onStatisticsControlOpen = (initialCardsList) => {
   statisticsElement.classList.remove(`visually-hidden`);
   statisticsTagsElement.classList.remove(`visually-hidden`);
   statisticsColorsElement.classList.remove(`visually-hidden`);
+  getFulfilledTasksAmount(initialCardsList);
+  statisticsContainerElement.querySelectorAll(`input`)
+    .forEach((input) => {
+      input.addEventListener(`change`, () => {
+        getFulfilledTasksAmount(initialCardsList);
+      });
+    });
   tagsChart.render();
   colorsChart.render();
+  timeStart = flatpickr(statisticsStartElement,
+      {altInput: true, altFormat: `j F`, dateFormat: `j F`, maxDate: statisticsEndElement.value, onClose: () => {
+        timeEnd.set(`minDate`, statisticsStartElement.value);
+      }});
+  timeEnd = flatpickr(statisticsEndElement,
+      {altInput: true, altFormat: `j F`, dateFormat: `j F`, minDate: statisticsStartElement.value, onClose: () => {
+        timeStart.set(`maxDate`, statisticsEndElement.value);
+      }});
 };
 
 export const onStatisticsControlClose = () => {
@@ -75,4 +109,13 @@ export const onStatisticsControlClose = () => {
   statisticsElement.classList.add(`visually-hidden`);
   statisticsTagsElement.classList.add(`visually-hidden`);
   statisticsColorsElement.classList.add(`visually-hidden`);
+  timeStart.destroy();
+  timeEnd.destroy();
+  timeStart = null;
+  timeEnd = null;
 };
+
+statisticsStartElement.value = moment(Date.now())
+    .startOf(`week`).add(1, `days`).format(`D MMMM`);
+statisticsEndElement.value = moment(Date.now())
+    .endOf(`week`).add(1, `days`).format(`D MMMM`);
