@@ -4,7 +4,6 @@ import {createElement, generateRandomColor} from '../utils';
 import {createCanvasColorsTemplate} from '../templates/canvas-colors';
 import {createCanvasTagsTemplate} from '../templates/canvas-tags';
 
-const boardContainerElement = document.querySelector(`.board`);
 const statisticsElement = document.querySelector(`.statistic`);
 const statisticsTagsElement = document.querySelector(`.statistic__tags-wrap`);
 const statisticsColorsElement = document.querySelector(`.statistic__colors-wrap`);
@@ -63,7 +62,7 @@ export const getStatisticsByColors = (initialCardsList) => {
 export const onStatisticsControlOpen = (initialCardsList) => {
   const tagsChart = new ChartComponent(getStatisticsByTags(initialCardsList));
   const colorsChart = new ChartComponent(getStatisticsByColors(initialCardsList));
-  boardContainerElement.classList.add(`visually-hidden`);
+  document.querySelector(`.board`).classList.add(`visually-hidden`);
   statisticsElement.classList.remove(`visually-hidden`);
   statisticsTagsElement.classList.remove(`visually-hidden`);
   statisticsColorsElement.classList.remove(`visually-hidden`);
@@ -72,7 +71,7 @@ export const onStatisticsControlOpen = (initialCardsList) => {
 };
 
 export const onStatisticsControlClose = () => {
-  boardContainerElement.classList.remove(`visually-hidden`);
+  document.querySelector(`.board`).classList.remove(`visually-hidden`);
   statisticsElement.classList.add(`visually-hidden`);
   statisticsTagsElement.classList.add(`visually-hidden`);
   statisticsColorsElement.classList.add(`visually-hidden`);

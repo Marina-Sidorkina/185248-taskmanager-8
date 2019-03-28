@@ -1,5 +1,4 @@
 import {createFiltersTemplate} from '../templates/filter';
-import {hasRepeatedDay} from '../utils';
 import BaseComponent from './base';
 import FilterComponent from './filter';
 
