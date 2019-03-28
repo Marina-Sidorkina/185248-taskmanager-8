@@ -1,7 +1,7 @@
 import {createFilterTemplate} from '../templates/filter';
 import BaseComponent from './base';
 
-export default class FiltersComponent extends BaseComponent {
+export default class FilterComponent extends BaseComponent {
   constructor(data) {
     super(data);
 
@@ -17,17 +17,16 @@ export default class FiltersComponent extends BaseComponent {
     this._onClick = fn;
   }
 
-  _onFilterClick(evt) {
-    return typeof this._onClick === `function` && this._onClick(evt);
+  _onFilterClick() {
+    return typeof this._onClick === `function` && this._onClick(this._element[0].id);
   }
 
   createListeners() {
     if (this._element) {
       this
         ._element
-        .querySelectorAll(`.filter__input`)
-        .forEach((element) => {
-          element.addEventListener(`click`, this._onFilterClick);
+        .forEach((item) => {
+          item.addEventListener(`click`, this._onFilterClick);
         });
     }
   }
@@ -36,10 +35,20 @@ export default class FiltersComponent extends BaseComponent {
     if (this._element) {
       this
         ._element
-        .querySelectorAll(`.filter__input`)
-        .forEach((element) => {
-          element.removeEventListener(`click`, this._onFilterClick);
+        .forEach((item) => {
+          item.removeEventListener(`click`, this._onFilterClick);
         });
     }
+  }
+
+  render() {
+    if (!this._state.isRendered) {
+      const newElement = document.createElement(`div`);
+      newElement.innerHTML = this.template;
+      this._element = Array.from(newElement.children).map((element) => element);
+      this.createListeners();
+      this._state.isRendered = true;
+    }
+    return this._element;
   }
 }

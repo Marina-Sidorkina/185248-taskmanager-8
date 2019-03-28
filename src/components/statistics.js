@@ -2,7 +2,7 @@ import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import cloneDeep from 'lodash.clonedeep';
 
-export default class ChartComponent {
+export default class StatisticsComponent {
   constructor(data) {
     this._data = cloneDeep(data);
     this._element = null;
