@@ -85,6 +85,10 @@ export const onStatisticsControlOpen = (initialCardsList) => {
   statisticsElement.classList.remove(`visually-hidden`);
   statisticsTagsElement.classList.remove(`visually-hidden`);
   statisticsColorsElement.classList.remove(`visually-hidden`);
+  statisticsStartElement.value = moment(Date.now())
+      .startOf(`week`).add(1, `days`).format(`D MMMM`);
+  statisticsEndElement.value = moment(Date.now())
+      .endOf(`week`).add(1, `days`).format(`D MMMM`);
   getFulfilledTasksAmount(initialCardsList);
   statisticsContainerElement.querySelectorAll(`input`)
     .forEach((input) => {
@@ -114,8 +118,3 @@ export const onStatisticsControlClose = () => {
   timeStart = null;
   timeEnd = null;
 };
-
-statisticsStartElement.value = moment(Date.now())
-    .startOf(`week`).add(1, `days`).format(`D MMMM`);
-statisticsEndElement.value = moment(Date.now())
-    .endOf(`week`).add(1, `days`).format(`D MMMM`);
