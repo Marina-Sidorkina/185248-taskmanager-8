@@ -22,26 +22,13 @@ export default class FiltersComponent extends BaseComponent {
     return element;
   }
 
-  _getFilteredCards() {
-    return {
-      'filter__all': (cardsList) => cardsList,
-      'filter__overdue': (cardsList) => cardsList
-          .filter((card) => card.dueDate < Date.now()),
-      'filter__today': (cardsList) => cardsList
-          .filter((card) => card.dueDate === Date.now()),
-      'filter__repeating': (cardsList) => cardsList
-          .filter((card) => hasRepeatedDay(card.repeatingDays))
-    };
-  }
-
   renderFilters(containerElement) {
     this.components = this._data.map((filter) => {
       const component = new FilterComponent(filter);
 
       component.onClick = (filterId) => {
         if (typeof this._onSelect === `function`) {
-          // TODO ???
-          this._onSelect(this._getFilteredCards()[filterId]());
+          this._onSelect(filterId);
         }
       };
       return component;

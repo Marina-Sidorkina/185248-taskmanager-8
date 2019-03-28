@@ -42,3 +42,19 @@ export const checkHashtagValidity = (inputElement, tags) => {
     return {isValid: true, error: ``};
   }
 };
+
+export const getFilteredCards = (cardsList) => {
+  return {
+    'filter__all': () => cardsList,
+    'filter__overdue': () => cardsList
+        .filter((card) => card.dueDate < Date.now()),
+    'filter__today': () => cardsList
+        .filter((card) => card.dueDate === Date.now()),
+    'filter__repeating': () => {
+      const list = cardsList
+          .filter((card) => hasRepeatedDay(card.repeatingDays));
+      return list;
+
+    }
+  };
+};

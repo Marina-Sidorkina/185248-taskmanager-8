@@ -2,6 +2,7 @@
 import {onStatisticsControlOpen, onStatisticsControlClose} from './lib/statistics';
 import {generateFilterData} from './data/filter';
 import {generateCards} from './mocks/cards';
+import {getFilteredCards} from './utils';
 import FiltersComponent from './components/filters';
 // import StatisticsComponent from './components/statistics';
 import CardsComponent from './components/cards';
@@ -14,17 +15,11 @@ const filterReferenceElement = mainElement.children[2];
 
 
 const CARD_LIMIT = 7;
-const CARDS = generateCards(CARD_LIMIT);
+let cardsList = generateCards(CARD_LIMIT);
 const FILTERS = generateFilterData();
-const cardsComponent = new CardsComponent(CARDS);
 const filtersComponent = new FiltersComponent(FILTERS);
 
-mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
 mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
-
-cardsComponent.onChange = ((updatedCards) => {
-  console.log(updatedCards);
-});
 
 //
 // const statisticsComponent = new StatisticsComponent(cardsComponent._data);
@@ -41,17 +36,23 @@ cardsComponent.onChange((updatedCards) => {
   // statisticsComponent.updateData(updatedCards);
 });
 */
+const addCards = (cards) => {
+  const cardsComponent = new CardsComponent(cards);
+  mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
+  cardsComponent.onChange = ((updatedCards) => {
+    cardsList = updatedCards;
+  });
+};
 
-
-filtersComponent.onSelect = (callback) => {
-  // TODO callback is not a function ??
+filtersComponent.onSelect = (id) => {
   mainElement.removeChild(mainElement.lastChild);
-  const filteredCardsList = callback(cardsComponent._data);
-  cardsComponent._data = Object.assign({}, filteredCardsList);
+  const filteredCardsList = getFilteredCards(cardsList)[id]();
+  addCards(filteredCardsList);
 };
 
 statisticsControlElement.addEventListener(`change`,
-    () => onStatisticsControlOpen(cardsComponent._data));
+    () => onStatisticsControlOpen(cardsList));
 taskControlElement.addEventListener(`change`, () => {
   onStatisticsControlClose();
 });
+addCards(cardsList);
