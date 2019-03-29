@@ -17,14 +17,14 @@ export default class CardsComponent extends BaseComponent {
 
   render() {
     const element = super.render();
-    this.renderCards(
+    this._renderCards(
         element.querySelector(`.board__tasks`)
     );
 
     return element;
   }
 
-  renderCards(containerElement) {
+  _renderCards(containerElement) {
     this.components = this._data.map((card) => {
       const component = new CardComponent(card);
 

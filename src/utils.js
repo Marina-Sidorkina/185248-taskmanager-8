@@ -1,4 +1,5 @@
-import {hashtagCheck} from './constants';
+import {hashtagCheck, COLORS} from './constants';
+import moment from 'moment';
 
 export const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
 export const generateRandomColor = () => {
@@ -57,4 +58,43 @@ export const getFilteredCards = (cardsList) => {
 
     }
   };
+};
+
+export const getAllTagsList = (cardsList) => {
+  const tags = new Set();
+  cardsList.forEach((card) => {
+    card.tags.forEach((tag) => {
+      tags.add(tag);
+    });
+  });
+  return Array.from(tags);
+};
+
+export const getCardsAmountByColors = (cardsList, resultArray) => {
+  COLORS.forEach((testColor, index) => {
+    resultArray[index] = cardsList.filter((card) => {
+      return card.color === testColor;
+    }).length;
+  });
+};
+
+export const getCardsAmountByTags = (cardsList, tagsList, resultArray) => {
+  tagsList.forEach((testTag, index) => {
+    resultArray[index] = cardsList.filter((card) => {
+      return Array.from(card.tags).some((tag) => tag === testTag);
+    }).length;
+  });
+};
+
+export const resetCanvasElement = (template, element, container) => {
+  const canvasWrapElement = container.querySelector(element); canvasWrapElement.innerHTML = ``;
+  canvasWrapElement.appendChild(createElement(template));
+};
+
+export const filterInitialCardsListByPeriod = (initialCardsList, start, end) => {
+  return initialCardsList.filter((card) => {
+    return card.isDone
+      && moment(card.dueDate).format(`D MMMM`) >= start
+      && moment(card.dueDate).format(`D MMMM`) <= end;
+  });
 };
