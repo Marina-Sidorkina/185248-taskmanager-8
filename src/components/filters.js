@@ -25,7 +25,7 @@ export default class FiltersComponent extends BaseComponent {
     this.components = this._data.map((filter) => {
       const component = new FilterComponent(filter);
 
-      component.onClick = (filterId) => {
+      component.onChange = (filterId) => {
         if (typeof this._onSelect === `function`) {
           this._onSelect(filterId);
         }
@@ -33,8 +33,7 @@ export default class FiltersComponent extends BaseComponent {
       return component;
     });
     this.components.forEach((component) => {
-      containerElement.appendChild(component.render()[0]);
-      containerElement.appendChild(component.render()[1]);
+      containerElement.appendChild(component.render());
     });
   }
 }
