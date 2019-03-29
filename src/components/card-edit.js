@@ -1,6 +1,7 @@
 import flatpickr from 'flatpickr';
 import moment from 'moment';
 import BaseComponent from './base';
+import {COLORS} from '../constants';
 import getCardDataPattern from '../patterns/card';
 import getRepeatingDays from '../patterns/repeating-days';
 import {createCardEditTemplate, createNewHashtagTemplate} from '../templates/cards';
@@ -43,10 +44,9 @@ export default class CardEditComponent extends BaseComponent {
     element.textContent = value ? `yes` : `no`;
   }
 
-  _removeCardColor(element, colors) {
-    for (const color of colors) {
-      const cls = `card--` + color;
-      element.classList.remove(cls);
+  _removeCardColor(element) {
+    for (const color of COLORS) {
+      element.classList.remove(`card--` + color);
     }
   }
 
@@ -72,7 +72,7 @@ export default class CardEditComponent extends BaseComponent {
 
   _onColorChange(evt) {
     const color = `card--` + evt.target.value;
-    this._removeCardColor(this._element, [`black`, `yellow`, `blue`, `green`, `pink`]);
+    this._removeCardColor(this._element);
     this._element.classList.add(color);
   }
 
@@ -166,12 +166,12 @@ export default class CardEditComponent extends BaseComponent {
     );
   }
 
-  _createCardMapper(target) {
+  _createCardMapper(target, newRepeatingDaysValues) {
     return {
       hashtag: (value) => (target.tags.add(value)),
       text: (value) => (target.title = value),
       color: (value) => (target.color = value),
-      repeat: (value) => (target.repeatingDays[value] = true),
+      repeat: (value) => (newRepeatingDaysValues[value] = true),
       date: (value) => (target.dueDate = `${value}, 2019, `),
       time: (value) => (target.dueDate = Date.parse(target.dueDate + value))
     };
@@ -180,14 +180,11 @@ export default class CardEditComponent extends BaseComponent {
   _processForm(formData) {
     const entry = getCardDataPattern;
     const newRepeatingDaysValues = getRepeatingDays();
-    const taskEditMapper = this._createCardMapper(entry);
+    const taskEditMapper = this._createCardMapper(entry, newRepeatingDaysValues);
     for (const pair of formData.entries()) {
       const [property, value] = pair;
       if (taskEditMapper[property]) {
         taskEditMapper[property](value);
-        if (property === `repeat`) {
-          newRepeatingDaysValues[value] = true;
-        }
       }
     }
     entry.repeatingDays = newRepeatingDaysValues;
