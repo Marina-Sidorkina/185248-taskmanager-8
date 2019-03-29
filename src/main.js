@@ -33,6 +33,7 @@ filtersComponent.onSelect = (id) => {
 statisticsControlElement.addEventListener(`change`, () => {
   document.querySelector(`.board`).classList.add(`visually-hidden`);
   document.querySelector(`.statistic`).classList.remove(`visually-hidden`);
+  statisticsComponent.update(cardsList);
 });
 
 taskControlElement.addEventListener(`change`, () => {
