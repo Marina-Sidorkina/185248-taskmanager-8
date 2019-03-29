@@ -32,9 +32,25 @@ const resetCanvasElement = (template, element) => {
   canvasWrapElement.appendChild(createElement(template));
 };
 
+const filterInitialCardsList = (initialCardsList) => {
+  return initialCardsList.filter((card) => {
+    return card.isDone
+      && moment(card.dueDate).format(`D MMMM`) >= statisticsStartElement.value
+      && moment(card.dueDate).format(`D MMMM`) <= statisticsEndElement.value;
+  });
+};
+
+const setInitialPeriod = () => {
+  statisticsStartElement.value = moment(Date.now())
+      .startOf(`week`).add(1, `days`).format(`D MMMM`);
+  statisticsEndElement.value = moment(Date.now())
+      .endOf(`week`).add(1, `days`).format(`D MMMM`);
+};
+
 export const getStatisticsByTags = (initialCardsList) => {
   resetCanvasElement(createCanvasTagsTemplate(), `.statistic__tags-wrap`);
-  const tagsList = getAllTagsList(initialCardsList);
+  const filteredCardsList = filterInitialCardsList(initialCardsList);
+  const tagsList = getAllTagsList(filteredCardsList);
   const data = {
     ctx: document.querySelector(`.statistic__tags`),
     labelsArray: tagsList,
@@ -43,7 +59,7 @@ export const getStatisticsByTags = (initialCardsList) => {
     text: `TAGS`
   };
   tagsList.forEach((testTag, index) => {
-    data.dataArray[index] = initialCardsList.filter((card) => {
+    data.dataArray[index] = filteredCardsList.filter((card) => {
       return Array.from(card.tags).some((tag) => tag === testTag);
     }).length;
   });
@@ -52,6 +68,7 @@ export const getStatisticsByTags = (initialCardsList) => {
 
 export const getStatisticsByColors = (initialCardsList) => {
   resetCanvasElement(createCanvasColorsTemplate(), `.statistic__colors-wrap`);
+  const filteredCardsList = filterInitialCardsList(initialCardsList);
   const data = {
     ctx: document.querySelector(`.statistic__colors`),
     labelsArray: COLORS,
@@ -60,7 +77,7 @@ export const getStatisticsByColors = (initialCardsList) => {
     text: `COLORS`
   };
   COLORS.forEach((testColor, index) => {
-    data.dataArray[index] = initialCardsList.filter((card) => {
+    data.dataArray[index] = filteredCardsList.filter((card) => {
       return card.color === testColor;
     }).length;
   });
@@ -68,36 +85,34 @@ export const getStatisticsByColors = (initialCardsList) => {
 };
 
 const getFulfilledTasksAmount = (tasks) => {
-  const amount = tasks.filter((task) => {
-    return task.isDone
-      && moment(task.dueDate).format(`D MMMM`) >= statisticsStartElement.value
-      && moment(task.dueDate).format(`D MMMM`) <= statisticsEndElement.value;
-  }).length;
+  const amount = filterInitialCardsList(tasks).length;
   statisticsStartElement.placeholder = statisticsStartElement.value;
   statisticsEndElement.placeholder = statisticsEndElement.value;
   document.querySelector(`.statistic__task-found`).innerHTML = amount;
 };
 
+const renderNewChart = (initialCardsList) => {
+  let tagsChart = new ChartComponent(getStatisticsByTags(initialCardsList));
+  let colorsChart = new ChartComponent(getStatisticsByColors(initialCardsList));
+  tagsChart.render();
+  colorsChart.render();
+};
+
 export const onStatisticsControlOpen = (initialCardsList) => {
-  const tagsChart = new ChartComponent(getStatisticsByTags(initialCardsList));
-  const colorsChart = new ChartComponent(getStatisticsByColors(initialCardsList));
   document.querySelector(`.board`).classList.add(`visually-hidden`);
   statisticsElement.classList.remove(`visually-hidden`);
   statisticsTagsElement.classList.remove(`visually-hidden`);
   statisticsColorsElement.classList.remove(`visually-hidden`);
-  statisticsStartElement.value = moment(Date.now())
-      .startOf(`week`).add(1, `days`).format(`D MMMM`);
-  statisticsEndElement.value = moment(Date.now())
-      .endOf(`week`).add(1, `days`).format(`D MMMM`);
+  setInitialPeriod();
   getFulfilledTasksAmount(initialCardsList);
+  renderNewChart(initialCardsList);
   statisticsContainerElement.querySelectorAll(`input`)
     .forEach((input) => {
       input.addEventListener(`change`, () => {
+        renderNewChart(initialCardsList);
         getFulfilledTasksAmount(initialCardsList);
       });
     });
-  tagsChart.render();
-  colorsChart.render();
   timeStart = flatpickr(statisticsStartElement,
       {altInput: true, altFormat: `j F`, dateFormat: `j F`, maxDate: statisticsEndElement.value, onClose: () => {
         timeEnd.set(`minDate`, statisticsStartElement.value);
@@ -118,3 +133,4 @@ export const onStatisticsControlClose = () => {
   timeStart = null;
   timeEnd = null;
 };
+setInitialPeriod();
