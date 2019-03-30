@@ -1,6 +1,7 @@
 import {generateFilterData} from './data/filter';
 import {generateCards} from './mocks/cards';
 import {getFilteredCards} from './utils';
+import {ALLOWED_FILTERS} from './constants';
 import FiltersComponent from './components/filters';
 import CardsComponent from './components/cards';
 import StatisticsComponent from './components/statistics';
@@ -18,8 +19,7 @@ let statisticsComponent;
 let filtersComponent = new FiltersComponent(FILTERS);
 
 const onFilterSelect = (id) => {
-  if (id === `filter__all` || id === `filter__overdue`
-    || id === `filter__today` || id === `filter__repeating`) {
+  if (ALLOWED_FILTERS.indexOf(id) !== -1) {
     mainElement.removeChild(mainElement.lastChild);
     const filteredCardsList = getFilteredCards(cardsList)[id]();
     cardsComponent.unrender();
