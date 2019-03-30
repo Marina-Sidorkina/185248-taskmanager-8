@@ -18,10 +18,13 @@ let statisticsComponent;
 let filtersComponent = new FiltersComponent(FILTERS);
 
 const onFilterSelect = (id) => {
-  mainElement.removeChild(mainElement.lastChild);
-  const filteredCardsList = getFilteredCards(cardsList)[id]();
-  cardsComponent.unrender();
-  addCards(filteredCardsList);
+  if (id === `filter__all` || id === `filter__overdue`
+    || id === `filter__today` || id === `filter__repeating`) {
+    mainElement.removeChild(mainElement.lastChild);
+    const filteredCardsList = getFilteredCards(cardsList)[id]();
+    cardsComponent.unrender();
+    addCards(filteredCardsList);
+  }
 };
 
 const addCards = (cards) => {
