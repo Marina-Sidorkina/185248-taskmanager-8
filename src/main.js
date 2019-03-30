@@ -32,9 +32,7 @@ const addCards = (cards) => {
   mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
 };
 
-filtersComponent.onSelect = (id) => {
-  onFilterSelect(id);
-};
+filtersComponent.onSelect = onFilterSelect;
 
 statisticsControlElement.addEventListener(`change`, () => {
   cardsComponent.unrender();
@@ -51,9 +49,7 @@ taskControlElement.addEventListener(`change`, () => {
   mainElement.removeChild(statisticsComponent._element);
   statisticsComponent.unrender();
   filtersComponent = new FiltersComponent(FILTERS);
-  filtersComponent.onSelect = (id) => {
-    onFilterSelect(id);
-  };
+  filtersComponent.onSelect = onFilterSelect;
   mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
   addCards(cardsList);
 });
