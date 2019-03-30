@@ -31,8 +31,10 @@ export const createStatisticsTemplate = () => (
 
     <div class="statistic__circle">
       <div class="statistic__tags-wrap">
+        <canvas class="statistic__tags" width="400" height="300"></canvas>
       </div>
       <div class="statistic__colors-wrap">
+        <canvas class="statistic__colors" width="400" height="300"></canvas>
       </div>
     </div>
   </section>`

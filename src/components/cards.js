@@ -59,9 +59,7 @@ export default class CardsComponent extends BaseComponent {
 
   unrender() {
     if (this._state.isRendered) {
-      const containerElement = this._element.querySelector(`.board__tasks`);
       this.components.forEach((component) => {
-        containerElement.removeChild(component._element);
         component.unrender();
       });
       this.components = null;

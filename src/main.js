@@ -14,9 +14,15 @@ const filterReferenceElement = mainElement.children[2];
 const statisticsReferenceElement = document.querySelector(`.result`);
 let cardsList = generateCards(CARD_LIMIT);
 let cardsComponent;
+let statisticsComponent;
+let filtersComponent = new FiltersComponent(FILTERS);
 
-const filtersComponent = new FiltersComponent(FILTERS);
-const statisticsComponent = new StatisticsComponent(cardsList);
+const onFilterSelect = (id) => {
+  mainElement.removeChild(mainElement.lastChild);
+  const filteredCardsList = getFilteredCards(cardsList)[id]();
+  cardsComponent.unrender();
+  addCards(filteredCardsList);
+};
 
 const addCards = (cards) => {
   cardsComponent = new CardsComponent(cards);
@@ -27,15 +33,15 @@ const addCards = (cards) => {
 };
 
 filtersComponent.onSelect = (id) => {
-  mainElement.removeChild(mainElement.lastChild);
-  const filteredCardsList = getFilteredCards(cardsList)[id]();
-  cardsComponent.unrender();
-  addCards(filteredCardsList);
+  onFilterSelect(id);
 };
 
 statisticsControlElement.addEventListener(`change`, () => {
-  mainElement.removeChild(mainElement.lastChild);
   cardsComponent.unrender();
+  mainElement.removeChild(mainElement.lastChild);
+  mainElement.removeChild(filtersComponent._element);
+  filtersComponent.unrender();
+  statisticsComponent = new StatisticsComponent(cardsList);
   statisticsComponent.render();
   mainElement.insertBefore(statisticsComponent._element,
       statisticsReferenceElement);
@@ -44,6 +50,11 @@ statisticsControlElement.addEventListener(`change`, () => {
 taskControlElement.addEventListener(`change`, () => {
   mainElement.removeChild(statisticsComponent._element);
   statisticsComponent.unrender();
+  filtersComponent = new FiltersComponent(FILTERS);
+  filtersComponent.onSelect = (id) => {
+    onFilterSelect(id);
+  };
+  mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
   addCards(cardsList);
 });
 

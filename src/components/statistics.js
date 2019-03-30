@@ -17,7 +17,7 @@ export default class StatisticsComponent extends BaseComponent {
 
   _setChartParams(canvas, labels, background, text) {
     return {
-      canvasCls: canvas,
+      ctx: canvas,
       labelsArray: labels,
       backgroundColor: background,
       dataArray: [],
@@ -35,35 +35,33 @@ export default class StatisticsComponent extends BaseComponent {
 
   _getStatisticsByColors(newData, startElement, endElement) {
     const filteredCardsList = this._filterCards(newData, startElement.value, endElement.value);
-    const data = this._setChartParams(`statistic__colors`, COLORS, COLORS, `COLORS`);
+    const statisticParams = this._setChartParams(this._element.querySelector(`.statistic__colors`), COLORS, COLORS, `COLORS`);
     COLORS.forEach((testColor, index) => {
-      data.dataArray[index] = filteredCardsList.filter((card) => {
+      statisticParams.dataArray[index] = filteredCardsList.filter((card) => {
         return card.color === testColor;
       }).length;
     });
-    return data;
+    return statisticParams;
   }
 
   _getStatisticsByTags(newData, startElement, endElement) {
     const filteredCardsList = this._filterCards(newData, startElement.value, endElement.value);
     const tagsList = getAllTagsList(filteredCardsList);
-    const data = this._setChartParams(`statistic__tags`, tagsList,
+    const statisticParams = this._setChartParams(this._element.querySelector(`.statistic__tags`), tagsList,
         tagsList.map(generateRandomColor), `TAGS`);
     tagsList.forEach((testTag, index) => {
-      data.dataArray[index] = filteredCardsList.filter((card) => {
+      statisticParams.dataArray[index] = filteredCardsList.filter((card) => {
         return Array.from(card.tags).some((tag) => tag === testTag);
       }).length;
     });
-    return data;
+    return statisticParams;
   }
 
   _renderNewCharts(data, element, startElement, endElement) {
     this._tagsChart = new ChartComponent(this._getStatisticsByTags(data, startElement, endElement));
     this._colorsChart = new ChartComponent(this._getStatisticsByColors(data, startElement, endElement));
-    element.querySelector(`.statistic__tags-wrap`)
-      .appendChild(this._tagsChart.render());
-    element.querySelector(`.statistic__colors-wrap`)
-      .appendChild(this._colorsChart.render());
+    this._tagsChart.render();
+    this._colorsChart.render();
   }
 
   _resetCardsAmount(element, startElement, endElement) {
@@ -92,6 +90,8 @@ export default class StatisticsComponent extends BaseComponent {
     startElement.value = generateCurrentDate(`start`);
     endElement.value = generateCurrentDate(`end`);
     this._resetCardsAmount(element, startElement, endElement);
+    this._element.querySelector(`.statistic__tags-wrap`).style.width = `350px`;
+    this._element.querySelector(`.statistic__colors-wrap`).style.width = `350px`;
     this._renderNewCharts(this._data, element, startElement, endElement);
     this._createListeners(element, startElement, endElement);
     this._timeStart = createWidget(startElement, {
@@ -121,5 +121,9 @@ export default class StatisticsComponent extends BaseComponent {
       this._timeEnd = null;
     }
     super.unrender();
+  }
+
+  update(newData) {
+    this._data = newData;
   }
 }
