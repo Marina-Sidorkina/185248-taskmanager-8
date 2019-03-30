@@ -1,5 +1,5 @@
 export const createStatisticsTemplate = () => (
-  `<section class="statistic container visually-hidden">
+  `<section class="statistic container">
     <div class="statistic__line">
       <div class="statistic__period">
         <h2 class="statistic__period-title">Task Activity DIAGRAM</h2>
@@ -31,10 +31,8 @@ export const createStatisticsTemplate = () => (
 
     <div class="statistic__circle">
       <div class="statistic__tags-wrap">
-        <canvas class="statistic__tags" width="400" height="300"></canvas>
       </div>
       <div class="statistic__colors-wrap">
-        <canvas class="statistic__colors" width="400" height="300"></canvas>
       </div>
     </div>
   </section>`

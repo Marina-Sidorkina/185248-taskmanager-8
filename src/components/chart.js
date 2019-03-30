@@ -1,11 +1,15 @@
 import Chart from 'chart.js';
+import BaseCompoentn from './base';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import cloneDeep from 'lodash.clonedeep';
+import {createCanvasTemplate} from '../templates/canvas';
 
-export default class ChartComponent {
+export default class ChartComponent extends BaseCompoentn {
   constructor(data) {
-    this._data = cloneDeep(data);
-    this._element = null;
+    super(data);
+  }
+
+  get template() {
+    return createCanvasTemplate();
   }
 
   get chartSetting() {
@@ -65,7 +69,14 @@ export default class ChartComponent {
   }
 
   render() {
-    this._element = new Chart(this._data.ctx, this.chartSetting);
-    return this._element;
+    const element = super.render();
+    element.classList.add(this._data.canvasCls);
+    this._chart = new Chart(element, this.chartSetting);
+    return element;
+  }
+
+  unrender() {
+    this._chart = null;
+    super.unrender();
   }
 }

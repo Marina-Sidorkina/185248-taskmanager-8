@@ -86,23 +86,24 @@ export default class CardEditComponent extends BaseComponent {
   _onHashtagEnter(evt) {
     const hashtagInputElement = this._element.querySelector(`.card__hashtag-input`);
     const hashtagsInitialAmount = this._data.tags.size;
+
     if (evt.keyCode === 13 && hashtagInputElement.checkValidity()) {
       evt.preventDefault();
       this._data.tags.add(evt.target.value.replace(/#/, ``));
+
       if (this._data.tags.size > hashtagsInitialAmount && evt.target.value.length !== 0) {
         const template = createNewHashtagTemplate(this._element
           .querySelector(`.card__hashtag-input`).value.replace(/#/, ``));
         this._element.querySelector(`.card__hashtag-list`)
           .appendChild(createElement(template));
       }
-      this.
-        _element.querySelectorAll(`.card__hashtag-delete`).forEach((elem) => {
-          elem.removeEventListener(`click`, this._onHashtagDelete);
-        });
-      this.
-          _element.querySelectorAll(`.card__hashtag-delete`).forEach((elem) => {
-            elem.addEventListener(`click`, this._onHashtagDelete);
-          });
+
+      this._element.querySelectorAll(`.card__hashtag-delete`).forEach((elem) => {
+        elem.removeEventListener(`click`, this._onHashtagDelete);
+      });
+      this._element.querySelectorAll(`.card__hashtag-delete`).forEach((elem) => {
+        elem.addEventListener(`click`, this._onHashtagDelete);
+      });
       evt.target.value = ``;
     }
   }
@@ -195,36 +196,25 @@ export default class CardEditComponent extends BaseComponent {
     this._element
       .querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
-
     this._element
       .querySelector(`.card__date-deadline-toggle`)
       .addEventListener(`click`, this._onDateChange);
-
-    this.
-    _element.querySelector(`.card__repeat-toggle`)
-    .addEventListener(`click`, this._onRepeatChange);
-    this.
-    _element.querySelectorAll(`.card__color-input`)
+    this._element.querySelector(`.card__repeat-toggle`)
+        .addEventListener(`click`, this._onRepeatChange);
+    this._element.querySelectorAll(`.card__color-input`)
       .forEach((input) => input.addEventListener(`click`, this._onColorChange));
-    this.
-      _element.querySelector(`.card__hashtag-input`)
+    this._element.querySelector(`.card__hashtag-input`)
       .addEventListener(`keypress`, this._onHashtagEnter);
-    this.
-      _element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
-        element.addEventListener(`click`, this._onHashtagDelete);
-      });
-    this.
-      _element.querySelectorAll(`.card__hashtag-input`).forEach((element) => {
-        element.addEventListener(`input`, this._onHashtagInvalid);
-      });
-    this.
-      _element.querySelector(`.card__img-input`)
+    this._element.querySelectorAll(`.card__hashtag-delete`).forEach((element) => {
+      element.addEventListener(`click`, this._onHashtagDelete);
+    });
+    this._element.querySelectorAll(`.card__hashtag-input`).forEach((element) => {
+      element.addEventListener(`input`, this._onHashtagInvalid);
+    });
+    this._element.querySelector(`.card__img-input`)
       .addEventListener(`change`, this._onPictureChange);
-
-    this.
-      _element.querySelector(`.card__delete`)
+    this._element.querySelector(`.card__delete`)
       .addEventListener(`click`, this._onDeleteButtonClick);
-
   }
 
   removeListeners() {
@@ -259,18 +249,27 @@ export default class CardEditComponent extends BaseComponent {
       _element.querySelector(`.card__delete`)
       .removeEventListener(`click`, this._onDeleteButtonClick);
   }
+
   render() {
     this._element = super.render();
+
     if (this._state.hasDate) {
-      flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
-      flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
+      this.widgetDate = flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`});
+      this.widgetTime = flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`});
     }
+
     return this._element;
   }
 
   unrender() {
-    flatpickr(this._element.querySelector(`.card__date`), {altInput: true, altFormat: `j F`, dateFormat: `j F`}).destroy();
-    flatpickr(this._element.querySelector(`.card__time`), {enableTime: true, noCalendar: true, altInput: true, altFormat: `h:i K`, dateFormat: `h:i K`}).destroy();
+    if (this.widgetDate) {
+      this.widgetDate.destroy();
+      this.widgetDate = null;
+    }
+    if (this.widgetTime) {
+      this.widgetTime.destroy();
+      this.widgetTime = null;
+    }
     super.unrender();
   }
 }

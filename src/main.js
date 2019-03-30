@@ -12,35 +12,40 @@ const taskControlElement = document.querySelector(`#control__task`);
 const mainElement = document.querySelector(`main`);
 const filterReferenceElement = mainElement.children[2];
 const statisticsReferenceElement = document.querySelector(`.result`);
-const filtersComponent = new FiltersComponent(FILTERS);
 let cardsList = generateCards(CARD_LIMIT);
+let cardsComponent;
+
+const filtersComponent = new FiltersComponent(FILTERS);
 const statisticsComponent = new StatisticsComponent(cardsList);
 
 const addCards = (cards) => {
-  const cardsComponent = new CardsComponent(cards);
-  mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
+  cardsComponent = new CardsComponent(cards);
   cardsComponent.onChange = ((updatedCards) => {
     cardsList = updatedCards;
   });
+  mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
 };
 
 filtersComponent.onSelect = (id) => {
   mainElement.removeChild(mainElement.lastChild);
   const filteredCardsList = getFilteredCards(cardsList)[id]();
+  cardsComponent.unrender();
   addCards(filteredCardsList);
 };
 
 statisticsControlElement.addEventListener(`change`, () => {
-  document.querySelector(`.board`).classList.add(`visually-hidden`);
-  document.querySelector(`.statistic`).classList.remove(`visually-hidden`);
-  statisticsComponent.update(cardsList);
+  mainElement.removeChild(mainElement.lastChild);
+  cardsComponent.unrender();
+  statisticsComponent.render();
+  mainElement.insertBefore(statisticsComponent._element,
+      statisticsReferenceElement);
 });
 
 taskControlElement.addEventListener(`change`, () => {
-  document.querySelector(`.board`).classList.remove(`visually-hidden`);
-  document.querySelector(`.statistic`).classList.add(`visually-hidden`);
+  mainElement.removeChild(statisticsComponent._element);
+  statisticsComponent.unrender();
+  addCards(cardsList);
 });
 
 mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
-mainElement.insertBefore(statisticsComponent.render(), statisticsReferenceElement);
 addCards(cardsList);

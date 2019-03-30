@@ -1,13 +1,9 @@
 import {createStatisticsTemplate} from '../templates/statistics';
-import {createCanvasColorsTemplate} from '../templates/canvas-colors';
-import {createCanvasTagsTemplate} from '../templates/canvas-tags';
-import {generateRandomColor, getAllTagsList,
-  getCardsAmountByColors, getCardsAmountByTags,
-  resetCanvasElement, filterInitialCardsListByPeriod} from '../utils';
+import {generateRandomColor} from '../utils';
+import {generateCurrentDate, createWidget, getAllTagsList} from '../lib/statistics';
 import BaseComponent from './base';
 import ChartComponent from './chart';
 import {COLORS} from '../constants';
-import flatpickr from 'flatpickr';
 import moment from 'moment';
 
 export default class StatisticsComponent extends BaseComponent {
@@ -19,74 +15,72 @@ export default class StatisticsComponent extends BaseComponent {
     return createStatisticsTemplate();
   }
 
-  _getStatisticsByColors(newData, container, startElement, endElement) {
-    resetCanvasElement(createCanvasColorsTemplate(), `.statistic__colors-wrap`, container);
-    const filteredCardsList = filterInitialCardsListByPeriod(newData, startElement.value, endElement.value);
-    const data = {
-      ctx: document.querySelector(`.statistic__colors`),
-      labelsArray: COLORS,
+  _setChartParams(canvas, labels, background, text) {
+    return {
+      canvasCls: canvas,
+      labelsArray: labels,
+      backgroundColor: background,
       dataArray: [],
-      backgroundColor: COLORS,
-      text: `COLORS`
+      text
     };
-    getCardsAmountByColors(filteredCardsList, data.dataArray);
+  }
+
+  _filterCards(cardsList, startValue, endValue) {
+    return cardsList.filter((card) => {
+      return card.isDone
+        && moment(card.dueDate).format(`D MMMM`) >= startValue
+        && moment(card.dueDate).format(`D MMMM`) <= endValue;
+    });
+  }
+
+  _getStatisticsByColors(newData, startElement, endElement) {
+    const filteredCardsList = this._filterCards(newData, startElement.value, endElement.value);
+    const data = this._setChartParams(`statistic__colors`, COLORS, COLORS, `COLORS`);
+    COLORS.forEach((testColor, index) => {
+      data.dataArray[index] = filteredCardsList.filter((card) => {
+        return card.color === testColor;
+      }).length;
+    });
     return data;
   }
 
-  _getStatisticsByTags(newData, container, startElement, endElement) {
-    resetCanvasElement(createCanvasTagsTemplate(), `.statistic__tags-wrap`, container);
-    const filteredCardsList = filterInitialCardsListByPeriod(newData, startElement.value, endElement.value);
+  _getStatisticsByTags(newData, startElement, endElement) {
+    const filteredCardsList = this._filterCards(newData, startElement.value, endElement.value);
     const tagsList = getAllTagsList(filteredCardsList);
-    const data = {
-      ctx: document.querySelector(`.statistic__tags`),
-      labelsArray: tagsList,
-      dataArray: [],
-      backgroundColor: tagsList.map(generateRandomColor),
-      text: `TAGS`
-    };
-    getCardsAmountByTags(filteredCardsList, tagsList, data.dataArray);
+    const data = this._setChartParams(`statistic__tags`, tagsList,
+        tagsList.map(generateRandomColor), `TAGS`);
+    tagsList.forEach((testTag, index) => {
+      data.dataArray[index] = filteredCardsList.filter((card) => {
+        return Array.from(card.tags).some((tag) => tag === testTag);
+      }).length;
+    });
     return data;
   }
 
-  _renderNewCharts(data, container, startElement, endElement) {
-    const tagsChart = new ChartComponent(this._getStatisticsByTags(data, container, startElement, endElement));
-    const colorsChart = new ChartComponent(this._getStatisticsByColors(data, container, startElement, endElement));
-    tagsChart.render();
-    colorsChart.render();
-
+  _renderNewCharts(data, element, startElement, endElement) {
+    this._tagsChart = new ChartComponent(this._getStatisticsByTags(data, startElement, endElement));
+    this._colorsChart = new ChartComponent(this._getStatisticsByColors(data, startElement, endElement));
+    element.querySelector(`.statistic__tags-wrap`)
+      .appendChild(this._tagsChart.render());
+    element.querySelector(`.statistic__colors-wrap`)
+      .appendChild(this._colorsChart.render());
   }
 
-  _setInitialPeriod(startElement, endElement) {
-    startElement.value = moment(Date.now())
-        .startOf(`week`).add(1, `days`).format(`D MMMM`);
-    endElement.value = moment(Date.now())
-        .endOf(`week`).add(1, `days`).format(`D MMMM`);
-  }
-
-  _getFulfilledTasksAmount(data, container, startElement, endElement) {
-    const amount = filterInitialCardsListByPeriod(data, startElement.value, endElement.value).length;
+  _resetCardsAmount(element, startElement, endElement) {
+    element.querySelector(`.statistic__task-found`).innerHTML =
+    this._filterCards(this._data, startElement.value, endElement.value).length;
     startElement.placeholder = startElement.value;
     endElement.placeholder = endElement.value;
-    container.querySelector(`.statistic__task-found`).innerHTML = amount;
   }
 
-  _setFlatpickr(startElement, endElement) {
-    this.timeStart = flatpickr(startElement,
-        {altInput: true, altFormat: `j F`, dateFormat: `j F`, maxDate: endElement.value, onClose: () => {
-          this.timeEnd.set(`minDate`, startElement.value);
-        }});
-    this.timeEnd = flatpickr(endElement,
-        {altInput: true, altFormat: `j F`, dateFormat: `j F`, minDate: startElement.value, onClose: () => {
-          this.timeStart.set(`maxDate`, endElement.value);
-        }});
-  }
-
-  _createListeners(data, element, startElement, endElement) {
+  _createListeners(element, startElement, endElement) {
     element.querySelectorAll(`.statistic-input-wrap input`)
       .forEach((input) => {
         input.addEventListener(`change`, () => {
-          this._renderNewCharts(data, element, startElement, endElement);
-          this._getFulfilledTasksAmount(data, element, startElement, endElement);
+          this._tagsChart.unrender();
+          this._colorsChart.unrender();
+          this._renderNewCharts(this._data, element, startElement, endElement);
+          this._resetCardsAmount(element, startElement, endElement);
         });
       });
   }
@@ -95,27 +89,37 @@ export default class StatisticsComponent extends BaseComponent {
     const element = super.render();
     const startElement = element.querySelector(`.statistic__period-input-start`);
     const endElement = element.querySelector(`.statistic__period-input-end`);
-    this._setInitialPeriod(startElement, endElement);
-    this._getFulfilledTasksAmount(this._data, element, startElement, endElement);
-    window.addEventListener(`load`, () => {
-      this._renderNewCharts(this._data, element, startElement, endElement);
+    startElement.value = generateCurrentDate(`start`);
+    endElement.value = generateCurrentDate(`end`);
+    this._resetCardsAmount(element, startElement, endElement);
+    this._renderNewCharts(this._data, element, startElement, endElement);
+    this._createListeners(element, startElement, endElement);
+    this._timeStart = createWidget(startElement, {
+      maxDate: endElement.value,
+      onClose: () => {
+        this._timeStart.set(`minDate`, startElement.value);
+      }
     });
-    this._createListeners(this._data, element, startElement, endElement);
-    this._setFlatpickr(startElement, endElement);
+    this._timeEnd = createWidget(endElement, {
+      minDate: startElement.value,
+      onClose: () => {
+        this._timeStart.set(`maxDate`, endElement.value);
+      }
+    });
     return element;
   }
 
-  update(newData) {
-    this._data = newData;
-    const startElement = this._element
-      .querySelector(`.statistic__period-input-start`);
-    const endElement = this
-      ._element.querySelector(`.statistic__period-input-end`);
-    this._renderNewCharts(this._data,
-        this._element, startElement, endElement);
-    this._getFulfilledTasksAmount(this._data,
-        this._element, startElement, endElement);
-    this._createListeners(this._data,
-        this._element, startElement, endElement);
+  unrender() {
+    this._tagsChart.unrender();
+    this._colorsChart.unrender();
+    if (this._timeStart) {
+      this._timeStart.destroy();
+      this._timeStart = null;
+    }
+    if (this._timeEnd) {
+      this._timeEnd.destroy();
+      this._timeEnd = null;
+    }
+    super.unrender();
   }
 }

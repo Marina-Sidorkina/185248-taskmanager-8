@@ -17,9 +17,8 @@ export default class CardsComponent extends BaseComponent {
 
   render() {
     const element = super.render();
-    this._renderCards(
-        element.querySelector(`.board__tasks`)
-    );
+
+    this._renderCards(element.querySelector(`.board__tasks`));
 
     return element;
   }
@@ -33,11 +32,8 @@ export default class CardsComponent extends BaseComponent {
       });
 
       component.onSubmit = (({prevData, nextData, prevElement, nextElement}) => {
-        this._data.forEach((item, id) => {
-          if (item.id === prevData.id) {
-            this._data[id] = Object.assign({}, this._data[id], nextData);
-          }
-        });
+        const index = this._data.findIndex((item) => item.id === prevData.id);
+        this._data[index] = Object.assign({}, this._data[index], nextData);
         containerElement.replaceChild(nextElement, prevElement);
         if (typeof this._onChange === `function`) {
           this._onChange(this._data);
@@ -45,11 +41,8 @@ export default class CardsComponent extends BaseComponent {
       });
 
       component.onDelete = (({data, element}) => {
-        this._data.forEach((item, id) => {
-          if (item.id === data.id) {
-            this._data[id] = null;
-          }
-        });
+        const index = this._data.findIndex((item) => item.id === data.id);
+        this._data[index] = null;
         this._data = this._data.filter((item) => item !== null);
         containerElement.removeChild(element);
         if (typeof this._onChange === `function`) {
@@ -58,6 +51,7 @@ export default class CardsComponent extends BaseComponent {
       });
       return component;
     });
+
     this.components.forEach((component) => {
       containerElement.appendChild(component.render());
     });
@@ -67,7 +61,7 @@ export default class CardsComponent extends BaseComponent {
     if (this._state.isRendered) {
       const containerElement = this._element.querySelector(`.board__tasks`);
       this.components.forEach((component) => {
-        containerElement.removeChild(component.element);
+        containerElement.removeChild(component._element);
         component.unrender();
       });
       this.components = null;
