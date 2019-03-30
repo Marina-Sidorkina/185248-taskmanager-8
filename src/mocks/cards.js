@@ -29,7 +29,8 @@ const TAGS = [
   `keks`
 ];
 
-const generateCard = () => ({
+const generateCard = (id) => ({
+  id,
   title: getRandomArrayElement(TITLES),
   dueDate: generateRandomDate(),
   tags: new Set(generateRandomArray(TAGS, tagsLimit.MIN, tagsLimit.MAX)),
@@ -45,7 +46,8 @@ const generateCard = () => ({
     'su': generateRandomBoolean()
   },
   isFavorite: generateRandomBoolean(),
-  hasDate: true
+  hasDate: true,
+  isDone: generateRandomBoolean()
 });
 
 export const generateCards = (limit) => (

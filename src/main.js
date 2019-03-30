@@ -1,52 +1,61 @@
-import {generateRandomNumber, hasRepeatedDay} from './utils';
-import {generateCards} from './mocks/cards';
 import {generateFilterData} from './data/filter';
-
-import CardViewComponent from './components/card-view';
-import CardEditComponent from './components/card-edit';
-import FilterComponent from './components/filter';
+import {generateCards} from './mocks/cards';
+import {getFilteredCards} from './utils';
+import {ALLOWED_FILTERS} from './constants';
+import FiltersComponent from './components/filters';
+import CardsComponent from './components/cards';
+import StatisticsComponent from './components/statistics';
 
 const CARD_LIMIT = 7;
-
-const boardElement = document.querySelector(`.board__tasks`);
+const FILTERS = generateFilterData();
+const statisticsControlElement = document.querySelector(`#control__statistic`);
+const taskControlElement = document.querySelector(`#control__task`);
 const mainElement = document.querySelector(`main`);
+const filterReferenceElement = mainElement.children[2];
+const statisticsReferenceElement = document.querySelector(`.result`);
+let cardsList = generateCards(CARD_LIMIT);
+let cardsComponent;
+let statisticsComponent;
+let filtersComponent = new FiltersComponent(FILTERS);
 
-const addCards = (limit) => {
-  generateCards(limit).forEach((data, index) => {
-    const taskData = Object.assign(data, {id: index});
+const onFilterSelect = (id) => {
+  if (ALLOWED_FILTERS.indexOf(id) !== -1) {
+    mainElement.removeChild(mainElement.lastChild);
+    const filteredCardsList = getFilteredCards(cardsList)[id]();
+    cardsComponent.unrender();
+    addCards(filteredCardsList);
+  }
+};
 
-    const editComponent = new CardEditComponent(taskData);
-    const viewComponent = new CardViewComponent(taskData);
-
-    viewComponent.onEdit = () => {
-      boardElement.replaceChild(editComponent.render(), viewComponent.element);
-      viewComponent.unrender();
-    };
-
-    editComponent.onSubmit = (newData) => {
-      viewComponent.update(newData);
-      viewComponent.setState({
-        isRepeated: hasRepeatedDay(newData.repeatingDays),
-        hasDate: newData.hasDate
-      });
-      boardElement.replaceChild(viewComponent.render(), editComponent.element);
-      editComponent.unrender();
-    };
-
-    boardElement.appendChild(viewComponent.render());
+const addCards = (cards) => {
+  cardsComponent = new CardsComponent(cards);
+  cardsComponent.onChange = ((updatedCards) => {
+    cardsList = updatedCards;
   });
+  mainElement.insertAdjacentElement(`beforeend`, cardsComponent.render());
 };
 
-const addFilter = (data) => {
-  const filterComponent = new FilterComponent(data);
-  const filterElement = filterComponent.render();
-  const nextElement = mainElement.children[2];
-  mainElement.insertBefore(filterElement, nextElement);
-  filterComponent.onChange = () => {
-    boardElement.innerHTML = ``;
-    addCards(generateRandomNumber(0, CARD_LIMIT));
-  };
-};
+filtersComponent.onSelect = onFilterSelect;
 
-addFilter(generateFilterData());
-addCards(CARD_LIMIT);
+statisticsControlElement.addEventListener(`change`, () => {
+  cardsComponent.unrender();
+  mainElement.removeChild(mainElement.lastChild);
+  mainElement.removeChild(filtersComponent._element);
+  filtersComponent.unrender();
+  statisticsComponent = new StatisticsComponent(cardsList);
+  statisticsComponent.render();
+  mainElement.insertBefore(statisticsComponent._element,
+      statisticsReferenceElement);
+});
+
+taskControlElement.addEventListener(`change`, () => {
+  mainElement.removeChild(statisticsComponent._element);
+  statisticsComponent.unrender();
+  filtersComponent = new FiltersComponent(FILTERS);
+  filtersComponent.onSelect = onFilterSelect;
+  mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
+  addCards(cardsList);
+});
+
+mainElement.insertBefore(filtersComponent.render(), filterReferenceElement);
+addCards(cardsList);

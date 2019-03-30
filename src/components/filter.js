@@ -18,28 +18,22 @@ export default class FilterComponent extends BaseComponent {
   }
 
   _onFilterChange() {
-    return typeof this._onChange === `function` && this._onChange();
+    return typeof this._onChange === `function` && this._onChange(this._element.querySelector(`input`).id);
   }
 
   createListeners() {
     if (this._element) {
       this
-        ._element
-        .querySelectorAll(`.filter__input`)
-        .forEach((element) => {
-          element.addEventListener(`change`, this._onFilterChange);
-        });
+        ._element.querySelector(`input`)
+        .addEventListener(`change`, this._onFilterChange);
     }
   }
 
   removeListeners() {
     if (this._element) {
       this
-        ._element
-        .querySelectorAll(`.filter__input`)
-        .forEach((element) => {
-          element.removeEventListener(`change`, this._onFilterChange);
-        });
+      ._element.querySelector(`input`)
+      .removeEventListener(`change`, this._onFilterChange);
     }
   }
 }

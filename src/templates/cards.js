@@ -228,7 +228,7 @@ export const createNewHashtagTemplate = (hashtag) => (
   </span>`
 );
 
-export const createCardTemplate = (card, state) => (
+export const createCardViewTemplate = (card, state) => (
   `<article class="card ${card.color ? `card--${card.color}` : `card--black`} ${state.isRepeated ? `card--repeat` : ``}">
     <form class="card__form" method="get">
       <div class="card__inner">
@@ -269,3 +269,14 @@ export const createCardEditTemplate = (card, state) => (
     </form>
   </article>`
 );
+
+export const createCardsTemplate = () => (
+  `<section class="board container">
+    <p class="board__no-tasks visually-hidden">
+      Congratulations, all tasks were completed! To create a new click on
+      «add new task» button.
+    </p>
+    <div class="board__tasks"></div>
+    <button class="load-more" type="button">load more</button>
+  </section>
+`);

@@ -1,6 +1,14 @@
 import {hashtagCheck} from './constants';
 
 export const getRandomArrayElement = (array) => array[Math.floor(Math.random() * array.length)];
+export const generateRandomColor = () => {
+  const letters = `0123456789abcdef`;
+  let color = `#`;
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
 
 export const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max + 1 - min) + min);
 export const generateRandomBoolean = () => Math.random() >= 0.5;
@@ -33,4 +41,20 @@ export const checkHashtagValidity = (inputElement, tags) => {
   } else {
     return {isValid: true, error: ``};
   }
+};
+
+export const getFilteredCards = (cardsList) => {
+  return {
+    'filter__all': () => cardsList,
+    'filter__overdue': () => cardsList
+        .filter((card) => card.dueDate < Date.now()),
+    'filter__today': () => cardsList
+        .filter((card) => card.dueDate === Date.now()),
+    'filter__repeating': () => {
+      const list = cardsList
+          .filter((card) => hasRepeatedDay(card.repeatingDays));
+      return list;
+
+    }
+  };
 };

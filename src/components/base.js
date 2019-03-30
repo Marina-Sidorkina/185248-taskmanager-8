@@ -24,10 +24,9 @@ export default class BaseComponent {
   }
 
   createListeners() {
-    throw new Error(`You have to define createListeners.`);
   }
+
   removeListeners() {
-    throw new Error(`You have to define removeListeners.`);
   }
 
   render() {
